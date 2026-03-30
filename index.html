@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shree Modak — Unreal Engine Developer</title>
+<meta name="description" content="Unreal Engine Developer specializing in gameplay mechanics, AI, UI systems, and multiplayer. 3+ years building PC & mobile games.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg:#05080f; --bg2:#080d18; --surface:#0d1424; --surface2:#111d30;
+  --border:rgba(0,224,255,.09); --border2:rgba(255,255,255,.05);
+  --cyan:#00e0ff; --cyan-dim:rgba(0,224,255,.12); --cyan-glow:rgba(0,224,255,.35);
+  --orange:#ff6b35; --gold:#ffc857; --green:#39d98a;
+  --text:#e8f0fe; --text2:#7a8ea8; --text3:#4a5d73;
+  --r:12px; --nav:68px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:var(--nav)}
+body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;line-height:1.6;overflow-x:hidden}
+img{max-width:100%;display:block} a{text-decoration:none;color:inherit} button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:4px}
+
+/* GRAIN */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5}
+
+/* CURSOR */
+.cur{width:10px;height:10px;background:var(--cyan);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:10000;transform:translate(-50%,-50%);transition:width .15s,height .15s;mix-blend-mode:screen}
+.cur-ring{width:32px;height:32px;border:1px solid var(--cyan);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:10000;transform:translate(-50%,-50%);transition:all .14s ease;opacity:.6}
+
+/* PROGRESS BAR */
+#pbar{position:fixed;top:0;left:0;height:2px;width:0%;background:linear-gradient(90deg,var(--cyan),var(--orange));z-index:9998}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
+.reveal.left{transform:translateX(-30px)} .reveal.right{transform:translateX(30px)}
+.reveal.visible{opacity:1;transform:none}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;border-bottom:1px solid transparent;transition:.3s}
+nav.sc{background:rgba(5,8,15,.88);backdrop-filter:blur(20px);border-color:var(--border2)}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.12em;color:var(--cyan);display:flex;align-items:center;gap:.5rem}
+.logo-dot{width:8px;height:8px;background:var(--cyan);border-radius:50%;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.nav-ul{display:flex;list-style:none;gap:2.2rem;align-items:center}
+.nav-ul a{font-size:.82rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);transition:color .2s;position:relative}
+.nav-ul a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--cyan);transform:scaleX(0);transition:transform .25s}
+.nav-ul a:hover{color:var(--text)} .nav-ul a:hover::after{transform:scaleX(1)}
+.nav-hire{background:var(--cyan);color:#000!important;padding:.42rem 1.3rem;border-radius:6px;font-weight:700!important;transition:box-shadow .2s,transform .2s!important}
+.nav-hire::after{display:none!important} .nav-hire:hover{box-shadow:0 0 22px var(--cyan-glow);transform:translateY(-2px)}
+.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:4px}
+.hbg span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+.hbg.on span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hbg.on span:nth-child(2){opacity:0}
+.hbg.on span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+@media(max-width:768px){
+  .hbg{display:flex}
+  .nav-ul{display:none;position:fixed;inset:0;background:rgba(5,8,15,.98);flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;z-index:998}
+  .nav-ul.on{display:flex} .nav-ul a{font-size:1.4rem}
+}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:calc(var(--nav) + 4rem) 1.5rem 5rem;position:relative;overflow:hidden}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,224,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,224,255,.04) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 65% at 50% 50%,black 20%,transparent 100%);animation:gs 30s linear infinite}
+@keyframes gs{0%{background-position:0 0}100%{background-position:64px 64px}}
+.hglow{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.hglow-a{width:700px;height:700px;background:rgba(0,224,255,.07);top:-150px;left:-150px;animation:brt 8s ease-in-out infinite}
+.hglow-b{width:500px;height:500px;background:rgba(255,107,53,.06);bottom:-100px;right:-100px;animation:brt 10s ease-in-out infinite reverse}
+@keyframes brt{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.floats{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.fl{position:absolute;width:42px;opacity:0;filter:drop-shadow(0 0 10px rgba(0,224,255,.4));animation:flUp linear infinite}
+@keyframes flUp{0%{transform:translateY(110vh) rotate(0deg);opacity:0}8%{opacity:.45}92%{opacity:.2}100%{transform:translateY(-15vh) rotate(25deg);opacity:0}}
+.fl:nth-child(1){left:7%;animation-duration:16s;animation-delay:0s}
+.fl:nth-child(2){left:22%;animation-duration:19s;animation-delay:3s}
+.fl:nth-child(3){left:45%;animation-duration:14s;animation-delay:7s}
+.fl:nth-child(4){left:68%;animation-duration:18s;animation-delay:1.5s}
+.fl:nth-child(5){left:85%;animation-duration:15s;animation-delay:5s}
+.hcontent{position:relative;z-index:2;max-width:860px}
+.htag{display:inline-flex;align-items:center;gap:.55rem;background:var(--cyan-dim);border:1px solid rgba(0,224,255,.22);border-radius:24px;padding:.32rem 1.1rem;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--cyan);letter-spacing:.1em;margin-bottom:2rem;animation:fu .7s ease both}
+.h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.8rem,11vw,7.5rem);letter-spacing:.04em;line-height:.95;margin-bottom:1.5rem;animation:fu .7s ease both .12s}
+.h1 .c{color:var(--cyan)} .h1 .o{color:var(--orange)}
+.hp{font-size:clamp(1rem,1.8vw,1.18rem);font-weight:300;color:var(--text2);max-width:580px;margin:0 auto 2.5rem;animation:fu .7s ease both .22s}
+.hp strong{color:var(--text);font-weight:600}
+.hbtns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fu .7s ease both .32s}
+.hstats{display:flex;justify-content:center;gap:4rem;margin-top:5rem;padding-top:3rem;border-top:1px solid var(--border2);animation:fu .7s ease both .42s}
+.stat{text-align:center}
+.sn{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1;color:var(--cyan);text-shadow:0 0 20px var(--cyan-glow)}
+.sl{font-size:.72rem;font-family:'JetBrains Mono',monospace;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin-top:.3rem}
+@media(max-width:480px){.hstats{gap:2rem}.sn{font-size:2rem}}
+@keyframes fu{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 2rem;border-radius:8px;font-weight:600;font-size:.92rem;border:none;transition:transform .2s,box-shadow .2s}
+.btn-c{background:var(--cyan);color:#000;box-shadow:0 0 18px rgba(0,224,255,.25)}
+.btn-c:hover{transform:translateY(-3px);box-shadow:0 0 35px var(--cyan-glow)}
+.btn-g{background:transparent;color:var(--text);border:1px solid var(--border2)}
+.btn-g:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px)}
+
+/* SHARED SECTION */
+.sec{padding:6rem 1.5rem} .sec.alt{background:var(--bg2)}
+.w{max-width:1100px;margin:0 auto}
+.slabel{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan);letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:.6rem}
+.stitle{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,5vw,3.2rem);letter-spacing:.05em;margin-bottom:1.5rem}
+
+/* ABOUT */
+.about-g{display:grid;grid-template-columns:1.2fr 1fr;gap:4rem;align-items:start;margin-top:3rem}
+@media(max-width:768px){.about-g{grid-template-columns:1fr;gap:2.5rem}}
+.ap{color:var(--text2);margin-bottom:1rem;font-size:1rem} .ap strong{color:var(--text)}
+.icard{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.8rem;position:relative;overflow:hidden}
+.icard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--orange))}
+.ict{font-family:'Bebas Neue',sans-serif;letter-spacing:.08em;font-size:1rem;color:var(--cyan);margin-bottom:1.2rem}
+.fact{display:flex;gap:.8rem;align-items:flex-start;margin-bottom:.9rem}
+.fact i{color:var(--cyan);font-size:.85rem;margin-top:.25rem;width:14px}
+.fact span{color:var(--text2);font-size:.9rem}
+
+/* SKILLS */
+.sk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:1rem;margin-top:2.5rem}
+.sk{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:.85rem 1rem;text-align:center;font-size:.85rem;font-weight:500;color:var(--text2);transition:border-color .2s,color .2s,transform .2s,box-shadow .2s;cursor:default}
+.sk:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,224,255,.1)}
+.sk i{display:block;font-size:1.3rem;margin-bottom:.45rem;color:var(--cyan)}
+
+/* TIMELINE */
+.tl{border-left:2px solid var(--border2);padding-left:2rem;margin-top:2.5rem}
+.tli{position:relative;margin-bottom:2.5rem}
+.tli::before{content:'';position:absolute;left:-2.55rem;top:.55rem;width:10px;height:10px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+.tc{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em;color:var(--cyan)}
+.tr{font-weight:600;font-size:.98rem;margin:.2rem 0}
+.td{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text3);margin-bottom:.9rem}
+.tlist{list-style:none}
+.tlist li{color:var(--text2);font-size:.9rem;padding-left:1.2rem;position:relative;margin-bottom:.4rem}
+.tlist li::before{content:'›';position:absolute;left:0;color:var(--cyan);font-weight:700}
+
+/* PROJECTS */
+.fbar{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin:2rem 0 2.5rem}
+.fb{background:var(--surface);border:1px solid var(--border2);color:var(--text2);padding:.38rem 1.2rem;border-radius:20px;font-size:.82rem;font-weight:600;transition:.2s;font-family:'Sora',sans-serif}
+.fb.active,.fb:hover{background:var(--cyan);color:#000;border-color:var(--cyan)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.8rem}
+.pcard{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s,border-color .3s}
+.pcard:hover{transform:translateY(-8px);box-shadow:0 24px 60px rgba(0,0,0,.5);border-color:rgba(0,224,255,.2)}
+.pimg{position:relative;height:210px;overflow:hidden}
+.pimg img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.pcard:hover .pimg img{transform:scale(1.07)}
+.pbadge{position:absolute;top:.8rem;right:.8rem;background:rgba(0,0,0,.75);border:1px solid var(--border);backdrop-filter:blur(6px);border-radius:5px;padding:.2rem .65rem;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--cyan);letter-spacing:.06em}
+.pstat{position:absolute;bottom:.8rem;left:.8rem;display:flex;align-items:center;gap:.4rem;background:rgba(0,0,0,.75);border:1px solid var(--border);backdrop-filter:blur(6px);border-radius:5px;padding:.2rem .65rem;font-family:'JetBrains Mono',monospace;font-size:.67rem;color:var(--green)}
+.pstat::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s ease-in-out infinite}
+.pbody{padding:1.4rem;flex:1;display:flex;flex-direction:column}
+.ptitle{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:.06em;color:var(--text);margin-bottom:.5rem}
+.pdesc{color:var(--text2);font-size:.88rem;flex:1;margin-bottom:1.2rem;line-height:1.6}
+.ppills{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.2rem}
+.pill{background:var(--cyan-dim);border:1px solid rgba(0,224,255,.15);color:var(--cyan);font-size:.7rem;font-family:'JetBrains Mono',monospace;padding:.22rem .6rem;border-radius:4px}
+.plink{display:inline-flex;align-items:center;gap:.5rem;background:var(--cyan);color:#000;padding:.55rem 1.4rem;border-radius:6px;font-weight:700;font-size:.87rem;align-self:flex-start;transition:transform .2s,box-shadow .2s}
+.plink:hover{transform:translateY(-2px);box-shadow:0 0 20px var(--cyan-glow)}
+
+/* COURSES */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.2rem;margin-top:2.5rem}
+.ccard{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.4rem;transition:border-color .2s,transform .2s}
+.ccard:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.cprov{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.5rem;text-transform:uppercase}
+.ctitle{font-weight:600;font-size:.96rem;margin-bottom:.3rem}
+.cdetail{font-size:.83rem;color:var(--text2)}
+
+/* TESTIMONIALS */
+.testgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.5rem;margin-top:2.5rem}
+.testcard{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.8rem;position:relative;transition:border-color .2s,transform .2s}
+.testcard:hover{border-color:rgba(0,224,255,.2);transform:translateY(-3px)}
+.testcard::before{content:'\201C';position:absolute;top:.8rem;left:1.2rem;font-size:4rem;line-height:1;color:rgba(0,224,255,.12);font-family:'Bebas Neue',sans-serif}
+.ttext{color:var(--text2);font-size:.9rem;font-style:italic;line-height:1.7;margin-bottom:1.2rem;padding-top:.5rem}
+.tauthor{display:flex;align-items:center;gap:.8rem}
+.tavatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--orange));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;color:#000;flex-shrink:0}
+.tname{font-weight:600;font-size:.88rem}
+.trole{font-size:.78rem;color:var(--text3)}
+
+/* CONTACT */
+.cwrap{display:grid;grid-template-columns:1fr 1.2fr;gap:4rem;margin-top:3rem;align-items:start}
+@media(max-width:768px){.cwrap{grid-template-columns:1fr;gap:2.5rem}}
+.cl h3{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.06em;margin-bottom:.8rem}
+.cl p{color:var(--text2);font-size:.92rem;margin-bottom:1.8rem;line-height:1.7}
+.cm{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
+.cmi{width:40px;height:40px;border-radius:8px;background:var(--cyan-dim);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:.95rem;flex-shrink:0}
+.cmt strong{display:block;font-size:.85rem;margin-bottom:.1rem}
+.cmt span{color:var(--text2);font-size:.82rem}
+.socials{display:flex;gap:.8rem;margin-top:1.8rem}
+.sb{width:40px;height:40px;border-radius:8px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:.95rem;transition:border-color .2s,color .2s,transform .2s}
+.sb:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-3px)}
+.cform{display:grid;gap:1rem}
+.fg label{display:block;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.cform input,.cform textarea{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:.8rem 1rem;color:var(--text);font-family:'Sora',sans-serif;font-size:.92rem;transition:border-color .2s,box-shadow .2s;resize:none}
+.cform input:focus,.cform textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-dim)}
+.cform button{width:100%;background:var(--cyan);color:#000;border:none;border-radius:8px;padding:.9rem;font-weight:700;font-size:.95rem;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:transform .2s,box-shadow .2s}
+.cform button:hover{transform:translateY(-2px);box-shadow:0 0 28px var(--cyan-glow)}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border2);text-align:center;padding:1.8rem;font-size:.82rem;color:var(--text3)}
+footer span{color:var(--cyan)}
+
+/* TOP BTN */
+#topbtn{position:fixed;bottom:2rem;right:2rem;z-index:500;width:44px;height:44px;border-radius:50%;background:var(--cyan);color:#000;border:none;font-size:.95rem;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(20px);transition:opacity .3s,transform .3s}
+#topbtn.show{opacity:1;transform:none} #topbtn:hover{box-shadow:0 0 20px var(--cyan-glow)}
+</style>
+</head>
+<body>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="cur-ring"></div>
+<div id="pbar"></div>
+
+<!-- NAV -->
+<nav id="mnav">
+  <div class="logo"><span class="logo-dot"></span>SHREE.DEV</div>
+  <ul class="nav-ul" id="nul">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#courses">Courses</a></li>
+    <li><a href="#contact" class="nav-hire">Hire Me</a></li>
+  </ul>
+  <button class="hbg" id="hbg" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hgrid"></div>
+  <div class="hglow hglow-a"></div>
+  <div class="hglow hglow-b"></div>
+  <div class="floats">
+    <img class="fl" src="r.png" alt=""><img class="fl" src="gta.png" alt="">
+    <img class="fl" src="bg.png" alt=""><img class="fl" src="b.png" alt="">
+    <img class="fl" src="r.png" alt="">
+  </div>
+  <div class="hcontent">
+    <div class="htag"><i class="fa-solid fa-circle-dot"></i> UNREAL ENGINE DEVELOPER · OPEN TO HIRE</div>
+    <h1 class="h1">I BUILD<br><span class="c">GAME</span> <span class="o">WORLDS</span></h1>
+    <p class="hp">Gameplay engineer crafting <strong>play-tested, shippable</strong> experiences in Unreal Engine 5 — from mobile arena brawlers to PC horror adventures.</p>
+    <div class="hbtns">
+      <a class="btn btn-c" href="#projects"><i class="fa-solid fa-gamepad"></i> View Projects</a>
+      <a class="btn btn-g" href="SHREE_GAME DEVELOPER_RESUME (2).pdf" download><i class="fa-solid fa-file-arrow-down"></i> Download CV</a>
+    </div>
+    <div class="hstats">
+      <div class="stat"><div class="sn">3+</div><div class="sl">Years in UE5</div></div>
+      <div class="stat"><div class="sn">2</div><div class="sl">Games Built</div></div>
+      <div class="stat"><div class="sn">4</div><div class="sl">Months Studio XP</div></div>
+      <div class="stat"><div class="sn">60</div><div class="sl">Target FPS</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="sec">
+  <div class="w">
+    <div class="reveal"><span class="slabel">// who am i</span><h2 class="stitle">About Me</h2></div>
+    <div class="about-g">
+      <div class="reveal left">
+        <p class="ap">I'm an <strong>Unreal Engine Developer</strong> with 3+ years of hands-on game creation and 4 months of real studio experience at Jabsz Studio. I specialise in building <strong>complete, shippable gameplay</strong> — not just prototypes.</p>
+        <p class="ap">My work spans gameplay mechanics, AI behaviour trees, UI/UMG systems, <strong>LAN multiplayer networking</strong>, and performance optimisation. I'm fluent in both Blueprints and C++.</p>
+        <p class="ap">Whether it's a <strong>mobile arena brawler</strong> or a <strong>PC horror adventure</strong>, I treat every project as a product — designed to run smoothly, look polished, and feel great to play.</p>
+        <div style="margin-top:1.8rem"><a class="btn btn-c" href="#contact"><i class="fa-solid fa-envelope"></i> Get In Touch</a></div>
+      </div>
+      <div class="reveal right">
+        <div class="icard">
+          <div class="ict">Quick Facts</div>
+          <div class="fact"><i class="fa-solid fa-location-dot"></i><span>India — open to remote &amp; relocation</span></div>
+          <div class="fact"><i class="fa-brands fa-windows"></i><span>Unreal Engine 5 — primary tool</span></div>
+          <div class="fact"><i class="fa-solid fa-code"></i><span>C++ · Blueprints · Git / GitHub</span></div>
+          <div class="fact"><i class="fa-solid fa-mobile-screen"></i><span>PC &amp; Android platforms</span></div>
+          <div class="fact"><i class="fa-solid fa-network-wired"></i><span>Multiplayer — LAN replication</span></div>
+          <div class="fact"><i class="fa-solid fa-gauge-high"></i><span>Performance optimisation &amp; profiling</span></div>
+          <div class="fact"><i class="fa-solid fa-rocket"></i><span>Actively seeking full-time / intern roles</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="sec alt">
+  <div class="w">
+    <div class="reveal"><span class="slabel">// tech stack</span><h2 class="stitle">Skills</h2></div>
+    <div class="sk-grid">
+      <div class="sk reveal"><i class="fa-solid fa-dragon"></i>Unreal Engine 5</div>
+      <div class="sk reveal"><i class="fa-solid fa-diagram-project"></i>Blueprint Scripting</div>
+      <div class="sk reveal"><i class="fa-solid fa-code"></i>C++ (Unreal)</div>
+      <div class="sk reveal"><i class="fa-solid fa-person-running"></i>Animation Blueprints</div>
+      <div class="sk reveal"><i class="fa-solid fa-sitemap"></i>State Machines</div>
+      <div class="sk reveal"><i class="fa-solid fa-robot"></i>AI Behaviour Trees</div>
+      <div class="sk reveal"><i class="fa-solid fa-window-restore"></i>UI / UMG</div>
+      <div class="sk reveal"><i class="fa-solid fa-network-wired"></i>Multiplayer (LAN)</div>
+      <div class="sk reveal"><i class="fa-brands fa-github"></i>Git / GitHub</div>
+      <div class="sk reveal"><i class="fa-solid fa-gauge-high"></i>Optimisation</div>
+      <div class="sk reveal"><i class="fa-solid fa-mountain-sun"></i>Level Design</div>
+      <div class="sk reveal"><i class="fa-solid fa-mobile-screen-button"></i>Android Packaging</div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="sec">
+  <div class="w">
+    <div class="reveal"><span class="slabel">// work history</span><h2 class="stitle">Experience</h2></div>
+    <div class="tl">
+      <div class="tli reveal">
+        <div class="tc">Jabsz Studio</div>
+        <div class="tr">Unreal Engine Developer — Internship</div>
+        <div class="td">Aug 2025 – Present · 4 months</div>
+        <ul class="tlist">
+          <li>Built and maintained core gameplay systems using Blueprints in a live production environment.</li>
+          <li>Developed UI screens and HUD elements with UMG; iterated quickly based on designer feedback.</li>
+          <li>Diagnosed and resolved performance bottlenecks — frame-time, draw calls, and memory spikes.</li>
+          <li>Implemented new features end-to-end: design doc → implementation → QA → merge.</li>
+          <li>Collaborated in a cross-functional team with artists, designers, and senior developers.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="sec alt">
+  <div class="w">
+    <div class="reveal"><span class="slabel">// what i've built</span><h2 class="stitle">Projects</h2></div>
+    <div class="fbar">
+      <button class="fb active" onclick="fp('all',this)">All</button>
+      <button class="fb" onclick="fp('pc',this)">PC</button>
+      <button class="fb" onclick="fp('mobile',this)">Mobile</button>
+    </div>
+    <div class="pgrid">
+      <!-- Shadow of Aldoria -->
+      <div class="pcard reveal" data-cat="pc">
+        <div class="pimg">
+          <img src="6.png" alt="Shadow of Aldoria">
+          <span class="pbadge">PC</span>
+          <span class="pstat">Completed</span>
+        </div>
+        <div class="pbody">
+          <h3 class="ptitle">Shadow of Aldoria</h3>
+          <p class="pdesc">A first-person horror adventure featuring atmospheric level design, environmental puzzles, narrative exploration, and cinematic Lumen lighting. Built solo from concept to final build.</p>
+          <div class="ppills">
+            <span class="pill">UE5</span><span class="pill">C++</span><span class="pill">Lumen</span><span class="pill">Horror</span><span class="pill">Puzzles</span>
+          </div>
+          <a class="plink" href="aldoria.html"><i class="fa-solid fa-arrow-right"></i> Details</a>
+        </div>
+      </div>
+      <!-- Bomber Clash -->
+      <div class="pcard reveal" data-cat="mobile">
+        <div class="pimg">
+          <img src="5.png" alt="Bomber Clash">
+          <span class="pbadge">Android</span>
+          <span class="pstat">In Development</span>
+        </div>
+        <div class="pbody">
+          <h3 class="ptitle">Bomber Clash</h3>
+          <p class="pdesc">A local-multiplayer arena brawler for Android — players host or join LAN matches, select characters, and battle in destructible bomb-filled arenas. Optimised for 60 FPS on mid-range devices.</p>
+          <div class="ppills">
+            <span class="pill">UE5</span><span class="pill">Blueprints</span><span class="pill">LAN Multiplayer</span><span class="pill">Android</span>
+          </div>
+          <a class="plink" href="bomber-clash.html"><i class="fa-solid fa-arrow-right"></i> Details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COURSES -->
+<section id="courses" class="sec">
+  <div class="w">
+    <div class="reveal"><span class="slabel">// learning</span><h2 class="stitle">Courses &amp; Certifications</h2></div>
+    <div class="cgrid">
+      <div class="ccard reveal"><div class="cprov">Udemy · Feb 2024</div><div class="ctitle">Unreal Engine 5 — C++ Programming</div><div class="cdetail">50-hour deep dive into gameplay programming with C++ in UE5.</div></div>
+      <div class="ccard reveal"><div class="cprov">Udemy · Oct 2024</div><div class="ctitle">UE5 — Create RPG Mobile Game</div><div class="cdetail">End-to-end mobile RPG development with Blueprints and Android deployment.</div></div>
+      <div class="ccard reveal"><div class="cprov">Udemy · Mar 2025</div><div class="ctitle">UE5 — Multiplayer Survival Framework</div><div class="cdetail">Blueprints, replication, and modular survival design for multiplayer.</div></div>
+    </div>
+    <div style="display:flex;justify-content:center;margin-top:2.5rem">
+      <a class="btn btn-c" href="Resume.pdf" download><i class="fa-solid fa-file-arrow-down"></i> Download Full CV</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="sec alt">
+  <div class="w">
+    <div class="reveal"><span class="slabel">// kind words</span><h2 class="stitle">Testimonials</h2></div>
+    <div class="testgrid">
+      <div class="testcard reveal"><p class="ttext">Shree has strong fundamentals in Unreal Engine and picks up tasks quickly. A reliable contributor who always delivers clean, functional code under real production pressure.</p><div class="tauthor"><div class="tavatar">J</div><div><div class="tname">Studio Lead</div><div class="trole">Jabsz Studio</div></div></div></div>
+      <div class="testcard reveal"><p class="ttext">Impressive range for someone self-taught — from AI behaviour trees to mobile optimisation. The Bomber Clash multiplayer implementation is especially solid for an indie project.</p><div class="tauthor"><div class="tavatar">R</div><div><div class="tname">Peer Developer</div><div class="trole">Game Dev Community</div></div></div></div>
+      <div class="testcard reveal"><p class="ttext">Shadow of Aldoria shows real artistry with Lumen lighting and atmosphere. The level design keeps you hooked — this is a complete, polished experience, not a student project.</p><div class="tauthor"><div class="tavatar">A</div><div><div class="tname">Beta Tester</div><div class="trole">PC Gamer</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="sec">
+  <div class="w">
+    <div class="reveal"><span class="slabel">// let's talk</span><h2 class="stitle">Get In Touch</h2></div>
+    <div class="cwrap">
+      <div class="reveal left">
+        <div class="cl">
+          <h3>Open to Opportunities</h3>
+          <p>Looking for full-time roles, internships, and freelance game projects. I respond within 24 hours and I'm available for a quick intro call anytime.</p>
+          <div class="cm"><div class="cmi"><i class="fa-solid fa-envelope"></i></div><div class="cmt"><strong>Email</strong><span>Use form on the right →</span></div></div>
+          <div class="cm"><div class="cmi"><i class="fa-solid fa-location-dot"></i></div><div class="cmt"><strong>Location</strong><span>India — remote friendly</span></div></div>
+          <div class="cm"><div class="cmi"><i class="fa-solid fa-clock"></i></div><div class="cmt"><strong>Availability</strong><span>Immediate — full time / intern</span></div></div>
+          <div class="socials">
+            <a class="sb" href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a class="sb" href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a class="sb" href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+            <a class="sb" href="#" aria-label="ArtStation"><i class="fa-brands fa-artstation"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="reveal right">
+        <form action="https://formspree.io/f/xkgbarye" method="POST" class="cform">
+          <div class="fg"><label>Your Name</label><input name="name" placeholder="Ravi Sharma" required></div>
+          <div class="fg"><label>Email Address</label><input type="email" name="email" placeholder="ravi@studio.com" required></div>
+          <div class="fg"><label>Subject</label><input name="subject" placeholder="Job opportunity / Project collab"></div>
+          <div class="fg"><label>Message</label><textarea name="message" rows="5" placeholder="Tell me about the role or project..." required></textarea></div>
+          <button type="submit"><i class="fa-solid fa-paper-plane"></i> Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><p>© <span id="yr"></span> <span>Shree Modak</span> · Unreal Engine Developer · Built with passion, zero frameworks.</p></footer>
+<button id="topbtn" aria-label="Back to top"><i class="fa-solid fa-chevron-up"></i></button>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+// Cursor
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim)})();
+// Scroll
+const nav=document.getElementById('mnav'),tb=document.getElementById('topbtn'),bar=document.getElementById('pbar');
+window.addEventListener('scroll',()=>{const s=window.scrollY,h=document.documentElement;nav.classList.toggle('sc',s>50);tb.classList.toggle('show',s>500);bar.style.width=(s/(h.scrollHeight-h.clientHeight)*100)+'%'});
+// Hamburger
+const hbg=document.getElementById('hbg'),nul=document.getElementById('nul');
+hbg.addEventListener('click',()=>{hbg.classList.toggle('on');nul.classList.toggle('on')});
+nul.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{hbg.classList.remove('on');nul.classList.remove('on')}));
+// Reveal
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');io.unobserve(x.target)}}),{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+// Filter
+function fp(cat,btn){document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.pcard').forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat===cat)?'flex':'none'})}
+// Top
+tb.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+</script>
+</body>
+</html>
