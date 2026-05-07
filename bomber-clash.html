@@ -194,54 +194,131 @@ footer span{color:var(--cyan)}
     </div>
   </div>
 </section>
-
-<!-- GAME INFO + REQUIREMENTS + TRAILER -->
-<section id="info" class="sec alt">
+<!-- SYSTEM REQUIREMENTS + SYSTEM DESIGN -->
+<section id="system" class="sec alt">
   <div class="w">
-    <div class="reveal"><span class="slabel">// details</span><h2 class="stitle">Game Info</h2></div>
-    <div class="two">
+
+    <div class="reveal">
+      <span class="slabel">// systems & performance</span>
+      <h2 class="stitle">System Overview</h2>
+    </div>
+
+    <div class="two" style="margin-top:2rem">
+
+      <!-- LEFT: SYSTEM REQUIREMENTS -->
       <div class="reveal left">
-        <ul class="ilist">
-          <li><strong>Genre</strong> Action · Bomber Arena</li>
-          <li><strong>Engine</strong> Unreal Engine 5</li>
-          <li><strong>Platform</strong> Android</li>
-          <li><strong>Network</strong> Local Multiplayer (LAN)</li>
-          <li><strong>Status</strong> Active Development</li>
-          <li><strong>Release</strong> Coming Soon</li>
-        </ul>
-        <h3 style="font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:1.1rem;color:var(--text3);margin-top:2rem;margin-bottom:1rem">PATCH NOTES</h3>
-        <div class="patch"><div class="pver">v1.2 — Blast Arena</div><div class="pdesc">Improved bomb mechanics, blast radius tuning, and arena layout refinements.</div></div>
-        <div class="patch"><div class="pver">v1.1 — Character Rush</div><div class="pdesc">Added character selection screen with multiple playable fighters.</div></div>
-        <div class="patch"><div class="pver">v1.0 — Initial Build</div><div class="pdesc">Core LAN lobby, bomb placement, and basic arena gameplay.</div></div>
-      </div>
-      <div class="reveal right">
-        <h3 style="font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:1.1rem;color:var(--text3);margin-bottom:1rem">SYSTEM REQUIREMENTS</h3>
-        <div class="rgrid" style="margin-bottom:2rem">
+        <h3 style="font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:1.2rem;margin-bottom:1rem;color:var(--text3)">
+          SYSTEM REQUIREMENTS
+        </h3>
+
+        <div class="rgrid">
           <div class="ri"><div class="rl">OS</div><div class="rv">Android 10+</div></div>
           <div class="ri"><div class="rl">RAM</div><div class="rv">4 GB minimum</div></div>
           <div class="ri"><div class="rl">Storage</div><div class="rv">1–2 GB free</div></div>
           <div class="ri"><div class="rl">CPU</div><div class="rv">Snapdragon 720G+</div></div>
           <div class="ri"><div class="rl">GPU</div><div class="rv">Adreno / Mali</div></div>
-          <div class="ri"><div class="rl">Network</div><div class="rv">Local WiFi</div></div>
-        </div>
-        <h3 style="font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:1.1rem;color:var(--text3);margin-bottom:1rem">TRAILER</h3>
-        <div style="border-radius:12px;overflow:hidden;aspect-ratio:16/9">
-          <iframe src="https://www.youtube.com/embed/8Fyypg7nFFU" style="width:100%;height:100%;border:none" allowfullscreen title="Bomber Clash Trailer"></iframe>
+          <div class="ri"><div class="rl">Network</div><div class="rv">Local WiFi (LAN)</div></div>
         </div>
       </div>
+
+      <!-- RIGHT: SYSTEM DESIGN -->
+      <div class="reveal right">
+        <h3 style="font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:1.2rem;margin-bottom:1rem;color:var(--text3)">
+          SYSTEM DESIGN
+        </h3>
+
+        <div class="patch">
+          <div class="pver">Multiplayer Flow</div>
+          <div class="pdesc">
+            Player Input → Client RPC → Server → Validate → Execute → Replicate to Clients
+          </div>
+        </div>
+
+        <div class="patch">
+          <div class="pver">Bomb System</div>
+          <div class="pdesc">
+            Input → Server Spawn Bomb → Timer → Explosion → Damage → Replication
+          </div>
+        </div>
+
+        <div class="patch">
+          <div class="pver">Core Architecture</div>
+          <div class="pdesc">
+            Controller → Character → Input System → Gameplay Logic → Animation → UI Feedback
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- CHALLENGES -->
+<section class="sec alt">
+  <div class="w">
+    <span class="slabel">// problem solving</span>
+    <h2 class="stitle">Challenges & Solutions</h2>
+
+    <div class="two">
+
+      <div>
+        <div class="patch">
+          <b>Multiplayer Sync</b><br>
+          Problem: Desync between players<br>
+          Solution: Server-authoritative replication<br>
+          Result: Stable gameplay
+        </div>
+
+        <div class="patch">
+          <b>Spectator Mode</b><br>
+          Problem: Player disengagement after death<br>
+          Solution: Spectator pawn + UI update<br>
+          Result: Continuous engagement
+        </div>
+      </div>
+
+      <div>
+        <div class="patch">
+          <b>Performance</b><br>
+          Problem: FPS drops<br>
+          Solution: Object pooling + optimization<br>
+          Result: Smooth performance
+        </div>
+
+        <div class="patch">
+          <b>Controls</b><br>
+          Problem: Unresponsive input<br>
+          Solution: Custom joystick + smoothing<br>
+          Result: Better feel
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- CTA -->
+<!-- TRAILER -->
 <section class="sec">
-  <div class="w reveal">
-    <div class="ctacard">
-      <h3>Interested in My Work?</h3>
-      <p>Check out Shadow of Aldoria or reach out — I'm open to collaborations and opportunities.</p>
-      <a class="btn-a" href="index.html#contact"><i class="fa-solid fa-envelope"></i> Contact Me</a>
-      <a class="btn-g" href="aldoria.html"><i class="fa-solid fa-skull"></i> View Shadow of Aldoria</a>
+  <div class="w" style="text-align:center">
+
+    <span class="slabel">// gameplay</span>
+    <h2 class="stitle">Trailer</h2>
+
+    <div style="
+      margin-top:2rem;
+      border-radius:16px;
+      overflow:hidden;
+      aspect-ratio:16/9;
+      max-width:900px;
+      margin-left:auto;
+      margin-right:auto;
+    ">
+     <iframe src="https://www.youtube.com/embed/r8DY6hNoksk" style="width:100%;height:100%;border:none" allowfullscreen title="Bomber Clash Trailer"></iframe>
+    
     </div>
+
   </div>
 </section>
 
