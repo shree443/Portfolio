@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infinity Waves — Shree Modak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/swiper@10/swiper-bundle.min.css">
+<style>
+:root{
+  --bg:#060408; --bg2:#090610; --surface:#0f0b18;
+  --border:rgba(180,0,30,.09); --border2:rgba(255,255,255,.05);
+  --cyan:#00e0ff; --cyan-dim:rgba(0,224,255,.12);
+  --gold:#ffc857; --green:#39d98a;
+  --text:#ede8f5; --text2:#7a6e88; --text3:#4a3d5a;
+  --r:12px; --nav:68px;
+  /* horror blood-red accent */
+  --accent:#b40020; --accent-bright:#e8002a; --accent-dim:rgba(180,0,32,.14); --accent-glow:rgba(180,0,32,.4);
+  --fog:rgba(120,0,20,.06);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:var(--nav)}
+body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;line-height:1.6;overflow-x:hidden}
+img{max-width:100%;display:block} a{text-decoration:none;color:inherit} button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px}
+
+/* FILM GRAIN overlay */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.6}
+
+/* VIGNETTE */
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 90% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.7) 100%);pointer-events:none;z-index:9998}
+
+/* PROGRESS */
+#pbar{position:fixed;top:0;left:0;height:2px;width:0%;background:linear-gradient(90deg,var(--accent),var(--gold));z-index:10000;transition:width .1s}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;border-bottom:1px solid transparent;transition:.3s}
+nav.sc{background:rgba(6,4,8,.92);backdrop-filter:blur(20px);border-color:rgba(180,0,32,.15)}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.12em;color:var(--accent-bright);display:flex;align-items:center;gap:.5rem}
+.logo-dot{width:8px;height:8px;background:var(--accent-bright);border-radius:50%;animation:blink 2s ease-in-out infinite;box-shadow:0 0 8px var(--accent)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.back-btn{display:inline-flex;align-items:center;gap:.5rem;color:var(--text2);font-weight:600;font-size:.92rem;transition:color .2s,gap .2s}
+.back-btn:hover{color:var(--accent-bright);gap:.8rem}
+.hnav{display:flex;gap:1.8rem}
+.hnav a{font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);transition:color .2s}
+.hnav a:hover{color:var(--accent-bright)}
+@media(max-width:640px){.hnav{display:none}}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
+.reveal.left{transform:translateX(-30px)}.reveal.right{transform:translateX(30px)}
+.reveal.visible{opacity:1;transform:none}
+
+/* HERO */
+.hero{min-height:88vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:calc(var(--nav) + 4rem) 1.5rem 5rem;position:relative;overflow:hidden}
+
+/* Creepy grid lines */
+.hgrid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(180,0,32,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(180,0,32,.05) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 80% 65% at 50% 50%,black 20%,transparent 100%);
+  animation:gs 40s linear infinite}
+@keyframes gs{0%{background-position:0 0}100%{background-position:64px 64px}}
+
+/* blood drip top */
+.hdrips{position:absolute;top:0;left:0;right:0;height:120px;pointer-events:none}
+.drip{position:absolute;top:0;width:2px;border-radius:0 0 4px 4px;background:linear-gradient(180deg,var(--accent),transparent);animation:drip linear infinite;opacity:0}
+@keyframes drip{0%{height:0;opacity:0;top:0}15%{opacity:.6}80%{opacity:.3}100%{height:80px;opacity:0}}
+
+/* floating horror particles */
+.particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.prt{position:absolute;font-size:1.4rem;opacity:0;animation:prtUp linear infinite}
+@keyframes prtUp{0%{transform:translateY(110vh) rotate(0deg);opacity:0}8%{opacity:.25}92%{opacity:.1}100%{transform:translateY(-20vh) rotate(180deg);opacity:0}}
+
+/* glows */
+.hglow-a{position:absolute;width:800px;height:600px;border-radius:50%;filter:blur(120px);background:rgba(160,0,25,.12);top:-200px;left:-150px;animation:brt 9s ease-in-out infinite;pointer-events:none}
+.hglow-b{position:absolute;width:600px;height:500px;border-radius:50%;filter:blur(100px);background:rgba(80,0,80,.08);bottom:-100px;right:-100px;animation:brt 11s ease-in-out infinite reverse;pointer-events:none}
+@keyframes brt{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+.hcontent{position:relative;z-index:2;max-width:800px}
+.htag{display:inline-flex;align-items:center;gap:.55rem;background:var(--accent-dim);border:1px solid rgba(180,0,32,.3);border-radius:24px;padding:.32rem 1.1rem;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--accent-bright);letter-spacing:.1em;margin-bottom:1.8rem;animation:fu .7s ease both}
+.h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,10vw,6.5rem);letter-spacing:.04em;line-height:.95;animation:fu .7s ease both .12s;text-shadow:0 0 80px rgba(180,0,32,.6),0 0 20px rgba(180,0,32,.3)}
+.h1 .a{color:var(--accent-bright)}
+.hp{color:var(--text2);font-size:1.05rem;font-weight:300;max-width:560px;margin:1.2rem auto 0;animation:fu .7s ease both .22s}
+.hmeta{display:flex;justify-content:center;flex-wrap:wrap;gap:2rem;margin-top:2.5rem;animation:fu .7s ease both .32s}
+.mi{text-align:center}
+.mlabel{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.mval{font-weight:600;font-size:.95rem;margin-top:.15rem}
+
+.blip{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,200,87,.08);border:1px solid rgba(255,200,87,.25);color:var(--gold);font-size:.78rem;font-family:'JetBrains Mono',monospace;padding:.3rem .8rem;border-radius:20px;margin-top:.8rem;animation:fu .7s ease both .5s}
+.blip::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);animation:blink 1.5s ease-in-out infinite}
+@keyframes fu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+/* SECTIONS */
+.sec{padding:5rem 1.5rem} .sec.alt{background:var(--bg2)}
+.w{max-width:1000px;margin:0 auto}
+.slabel{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent-bright);letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:.6rem}
+.stitle{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:.05em;margin-bottom:1.5rem}
+.stitle::after{content:'';display:block;width:50px;height:2px;background:linear-gradient(90deg,var(--accent),var(--gold));margin-top:.5rem;border-radius:2px}
+
+/* GALLERY */
+.mySwiper{width:100%;padding-bottom:3rem}
+.swiper-slide img{border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.8),0 0 30px rgba(180,0,32,.1)}
+.swiper-button-next,.swiper-button-prev{color:var(--accent-bright);background:rgba(180,0,32,.14);backdrop-filter:blur(6px);width:50px;height:50px;border-radius:50%}
+.swiper-button-next::after,.swiper-button-prev::after{font-size:.9rem}
+.swiper-pagination-bullet{background:rgba(255,255,255,.15)}
+.swiper-pagination-bullet-active{background:var(--accent)}
+
+/* FEATURES */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem}
+.fc{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.4rem;transition:border-color .2s,transform .2s,box-shadow .2s}
+.fc:hover{border-color:rgba(180,0,32,.4);transform:translateY(-3px);box-shadow:0 8px 30px rgba(180,0,32,.1)}
+.fi{color:var(--accent-bright);font-size:1.3rem;margin-bottom:.6rem}
+.ft{font-weight:600;margin-bottom:.3rem}
+.fd{font-size:.87rem;color:var(--text2)}
+
+/* TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.2rem}
+.tag{background:var(--accent-dim);border:1px solid rgba(180,0,32,.25);color:var(--accent-bright);font-size:.73rem;font-family:'JetBrains Mono',monospace;padding:.25rem .65rem;border-radius:4px}
+
+/* TWO COL */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+@media(max-width:640px){.two{grid-template-columns:1fr;gap:2rem}}
+
+/* INFO LIST */
+.ilist{list-style:none}
+.ilist li{display:flex;gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--border2);font-size:.9rem}
+.ilist li:last-child{border-bottom:none}
+.ilist strong{color:var(--text3);min-width:90px;font-weight:500;font-family:'JetBrains Mono',monospace;font-size:.78rem;text-transform:uppercase;padding-top:.1rem}
+
+/* PATCH / FLOW CARDS */
+.patch{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.8rem;transition:border-color .2s}
+.patch:hover{border-color:rgba(180,0,32,.3)}
+.pver{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--gold);margin-bottom:.4rem}
+.pdesc{font-size:.88rem;color:var(--text2)}
+
+/* BOSS CARDS */
+.bossgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;margin-top:1.5rem}
+.bcard{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:1.6rem;position:relative;overflow:hidden;transition:border-color .25s,transform .25s}
+.bcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--bcolor,var(--accent));opacity:.6}
+.bcard:hover{transform:translateY(-4px);border-color:rgba(180,0,32,.35)}
+.bname{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.08em;margin-bottom:.2rem;color:var(--bcolor,var(--accent-bright))}
+.btitle{font-size:.73rem;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.8rem}
+.babilities{list-style:none;margin-top:.5rem}
+.babilities li{font-size:.85rem;color:var(--text2);padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.03);display:flex;align-items:flex-start;gap:.6rem}
+.babilities li:last-child{border-bottom:none}
+.babilities li::before{content:'▸';color:var(--bcolor,var(--accent-bright));font-size:.7rem;margin-top:.2rem;flex-shrink:0}
+
+/* INVENTORY cards */
+.invgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:1.5rem}
+.invcard{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:1.2rem;text-align:center;transition:border-color .2s,transform .2s}
+.invcard:hover{border-color:rgba(180,0,32,.35);transform:translateY(-3px)}
+.inv-icon{font-size:2rem;margin-bottom:.6rem}
+.inv-name{font-weight:600;font-size:.95rem;margin-bottom:.25rem}
+.inv-desc{font-size:.82rem;color:var(--text2)}
+
+/* REQ GRID */
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:480px){.rgrid{grid-template-columns:1fr}}
+.ri{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:.9rem 1rem}
+.rl{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.rv{font-weight:600;margin-top:.2rem}
+
+/* BUTTONS */
+.btn-a{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent);color:#fff;padding:.8rem 2rem;border-radius:8px;font-weight:700;font-size:.92rem;transition:transform .2s,box-shadow .2s;box-shadow:0 0 18px var(--accent-glow)}
+.btn-a:hover{transform:translateY(-3px);box-shadow:0 0 35px var(--accent-glow)}
+.btn-g{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--text);border:1px solid var(--border2);padding:.8rem 2rem;border-radius:8px;font-weight:600;font-size:.92rem;margin-left:.8rem;transition:border-color .2s,color .2s}
+.btn-g:hover{border-color:var(--accent);color:var(--accent-bright)}
+
+/* CTA */
+.ctacard{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:3rem;text-align:center}
+.ctacard h3{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.06em;margin-bottom:.5rem}
+.ctacard p{color:var(--text2);margin-bottom:2rem}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border2);text-align:center;padding:1.8rem;font-size:.82rem;color:var(--text3)}
+footer span{color:var(--accent-bright)}
+</style>
+</head>
+<body>
+<div id="pbar"></div>
+
+<!-- NAV -->
+<nav id="mnav">
+  <div class="logo"><span class="logo-dot"></span>SHREE.DEV</div>
+  <a href="index.html#projects" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a>
+  <div class="hnav">
+    <a href="#gallery">Gallery</a>
+    <a href="#features">Features</a>
+    <a href="#Challenges">Challenges</a>
+    <a href="#system">Systems</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hgrid"></div>
+  <div class="hglow-a"></div>
+  <div class="hglow-b"></div>
+  <div class="hdrips" id="drips"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="hcontent">
+    <div class="htag"><i class="fa-solid fa-skull"></i> ANDROID · SURVIVAL HORROR · IN DEVELOPMENT</div>
+    <h1 class="h1">INFINITY<br><span class="a">WAVES</span></h1>
+    <p class="hp">Survive endless hordes of undead in a dark, decaying world. Wield sword and bow, loot gear, and face monstrous bosses — each more terrifying than the last.</p>
+
+    <div class="hmeta">
+      <div class="mi"><div class="mlabel">Engine</div><div class="mval">Unreal Engine 5</div></div>
+      <div class="mi"><div class="mlabel">Platform</div><div class="mval">Android</div></div>
+      <div class="mi"><div class="mlabel">Genre</div><div class="mval">Survival Horror</div></div>
+      <div class="mi"><div class="mlabel">Status</div><div class="mval" style="color:var(--gold)">In Development</div></div>
+    </div>
+
+    <div><span class="blip">Active Development</span></div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" class="sec alt">
+  <div class="w reveal">
+    <span class="slabel">// screenshots</span>
+    <h2 class="stitle">Gallery</h2>
+    <div class="swiper mySwiper" style="margin-top:1.5rem">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="c1.png" loading="lazy" alt="Infinity Waves gameplay" style="width:100%;aspect-ratio:16/9;object-fit:cover;background:#0f0b18;border-radius:14px"></div>
+        <div class="swiper-slide"><img src="c (2).png" loading="lazy" alt="Infinity Waves boss" style="width:100%;aspect-ratio:16/9;object-fit:cover;background:#0f0b18;border-radius:14px"></div>
+        <div class="swiper-slide"><img src="c (4).png" loading="lazy" alt="Infinity Waves inventory" style="width:100%;aspect-ratio:16/9;object-fit:cover;background:#0f0b18;border-radius:14px"></div>
+        <div class="swiper-slide"><img src="c (5).png" loading="lazy" alt="Infinity Waves environment" style="width:100%;aspect-ratio:16/9;object-fit:cover;background:#0f0b18;border-radius:14px"></div>
+      </div>
+      <div class="swiper-pagination"></div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="sec">
+  <div class="w">
+    <div class="reveal"><span class="slabel">// what's inside</span><h2 class="stitle">Game Features</h2></div>
+    <div class="fgrid">
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-sword"></i></div>
+        <div class="ft">Melee Combat — Sword</div>
+        <div class="fd">Fluid close-range combat with sword attacks, combo chains, and hit-reaction animations driven by UE5 Animation Blueprints.</div>
+      </div>
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-bow-arrow"></i></div>
+        <div class="ft">Ranged Combat — Bow & Arrow</div>
+        <div class="fd">Aim, draw, and release — projectile arrows with travel arc, impact detection, and enemy stagger on headshots.</div>
+      </div>
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-briefcase"></i></div>
+        <div class="ft">Inventory System</div>
+        <div class="fd">Pick up, store, and manage items via a full UMG inventory UI. Equip weapons, armour, and consumables on the fly.</div>
+      </div>
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-brain"></i></div>
+        <div class="ft">Zombie AI — Behaviour Trees</div>
+        <div class="fd">Undead enemies driven by UE5 Behaviour Trees: idle patrol, detect player, chase, attack, and retreat states.</div>
+      </div>
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-dragon"></i></div>
+        <div class="ft">Boss Encounters</div>
+        <div class="fd">Multiple hand-crafted bosses, each with unique abilities, attack phases, and escalating difficulty as waves increase.</div>
+      </div>
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-moon"></i></div>
+        <div class="ft">Horror Environment</div>
+        <div class="fd">Dark, fog-filled levels with dynamic lighting, atmospheric sound design, and decaying environments to maximise dread.</div>
+      </div>
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-infinity"></i></div>
+        <div class="ft">Endless Wave System</div>
+        <div class="fd">Wave-based spawner with configurable difficulty scaling — more enemies, tougher variants, and boss waves every 5th round.</div>
+      </div>
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-mobile-screen"></i></div>
+        <div class="ft">Android Optimised</div>
+        <div class="fd">Profiled for mid-range Android — draw call budgets, LODs, texture streaming, and responsive on-screen touch controls.</div>
+      </div>
+    </div>
+    <div class="tags">
+      <span class="tag">UE5</span><span class="tag">Blueprints</span><span class="tag">Behaviour Trees</span>
+      <span class="tag">Animation BP</span><span class="tag">UMG</span><span class="tag">Android</span>
+      <span class="tag">AI Perception</span><span class="tag">Git</span>
+    </div>
+  </div>
+</section>
+
+<!-- AI & SYSTEMS -->
+<section id="system" class="sec alt">
+  <div class="w">
+    <div class="reveal">
+      <span class="slabel">// systems & performance</span>
+      <h2 class="stitle">System Overview</h2>
+    </div>
+
+    <div class="two" style="margin-top:2rem">
+
+      <!-- LEFT: SYSTEM REQUIREMENTS -->
+      <div class="reveal left">
+        <h3 style="font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:1.2rem;margin-bottom:1rem;color:var(--text3)">SYSTEM REQUIREMENTS</h3>
+        <div class="rgrid">
+          <div class="ri"><div class="rl">OS</div><div class="rv">Android 10+</div></div>
+          <div class="ri"><div class="rl">RAM</div><div class="rv">4 GB minimum</div></div>
+          <div class="ri"><div class="rl">Storage</div><div class="rv">1–2 GB free</div></div>
+          <div class="ri"><div class="rl">CPU</div><div class="rv">Snapdragon 720G+</div></div>
+          <div class="ri"><div class="rl">GPU</div><div class="rv">Adreno / Mali</div></div>
+          <div class="ri"><div class="rl">Network</div><div class="rv">Not required</div></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: SYSTEM DESIGN -->
+      <div class="reveal right">
+        <h3 style="font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:1.2rem;margin-bottom:1rem;color:var(--text3)">SYSTEM DESIGN</h3>
+
+        <div class="patch">
+          <div class="pver">Zombie AI Flow</div>
+          <div class="pdesc">Patrol → AI Perception Detect → Chase → Attack → Stagger → Death → Delegate → Wave Counter Update</div>
+        </div>
+
+        <div class="patch">
+          <div class="pver">Boss AI Flow</div>
+          <div class="pdesc">Idle → Aggro → Phase 1 Attacks → HP Threshold → Phase 2 Enrage → Special Ability → Defeated</div>
+        </div>
+
+        <div class="patch">
+          <div class="pver">Wave Spawner</div>
+          <div class="pdesc">Wave Config Struct → Spawn Queue → Pool Check → Activate Actor → Track Alive Count → Wave Clear</div>
+        </div>
+
+        <div class="patch">
+          <div class="pver">Combat Architecture</div>
+          <div class="pdesc">Input → Combat Component → Weapon Actor → Hit Trace → Damage Interface → Anim Montage → HUD</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CHALLENGES -->
+<section id="Challenges" class="sec">
+  <div class="w">
+    <span class="slabel">// problem solving</span>
+    <h2 class="stitle reveal">Challenges & Solutions</h2>
+
+    <div class="two">
+      <div>
+        <div class="patch reveal">
+          <b>Boss AI Phase Transitions</b><br>
+          Problem: Boss mid-fight behaviour switching caused frame spikes<br>
+          Solution: Async Behaviour Tree service + pre-cached ability refs<br>
+          Result: Smooth phase change with no visible hitch
+        </div>
+        <div class="patch reveal">
+          <b>Inventory on Mobile</b><br>
+          Problem: Touch drag-and-drop felt unreliable on small screens<br>
+          Solution: Tap-to-select + confirm equip pattern instead of drag<br>
+          Result: Snappy and accurate on mid-range devices
+        </div>
+      </div>
+      <div>
+        <div class="patch reveal">
+          <b>Zombie Horde Performance</b><br>
+          Problem: 20+ simultaneous AI ticking caused FPS drops<br>
+          Solution: LOD-based tick rate throttling + object pooling<br>
+          Result: Stable 30–60 FPS on target Android hardware
+        </div>
+        <div class="patch reveal">
+          <b>Arrow Projectile Accuracy</b><br>
+          Problem: Arc trajectory clipped through environment<br>
+          Solution: Multi-step line trace + collision sphere sweep<br>
+          Result: Consistent hit registration with no ghost passes
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="sec alt">
+  <div class="w reveal">
+    <div class="ctacard">
+      <h3>Want to Follow Development?</h3>
+      <p>Infinity Waves is still being built. Reach out if you'd like to collaborate or see a demo build.</p>
+      <a class="btn-a" href="index.html#contact"><i class="fa-solid fa-envelope"></i> Get In Touch</a>
+      <a class="btn-g" href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a>
+    </div>
+  </div>
+</section>
+
+<footer><p>© <span id="yr"></span> <span>Shree Modak</span> · Unreal Engine Developer</p></footer>
+
+<script src="https://unpkg.com/swiper@10/swiper-bundle.min.js"></script>
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+// Scroll progress & nav
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  document.getElementById('pbar').style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+  document.getElementById('mnav').classList.toggle('sc', window.scrollY > 50);
+});
+
+// Reveal observer
+const io = new IntersectionObserver(e => e.forEach(x => {
+  if (x.isIntersecting) { x.target.classList.add('visible'); io.unobserve(x.target); }
+}), { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// Horror floating particles
+const pc = document.getElementById('particles');
+const emojis = ['💀', '🩸', '🦴', '🧟', '⚰️', '🕸️'];
+for (let i = 0; i < 16; i++) {
+  const p = document.createElement('div');
+  p.className = 'prt';
+  p.textContent = emojis[i % emojis.length];
+  p.style.cssText = `left:${Math.random() * 100}%;font-size:${Math.random() * 14 + 10}px;animation-duration:${Math.random() * 14 + 14}s;animation-delay:${Math.random() * 16}s;`;
+  pc.appendChild(p);
+}
+
+// Blood drip top
+const dc = document.getElementById('drips');
+for (let i = 0; i < 20; i++) {
+  const d = document.createElement('div');
+  d.className = 'drip';
+  d.style.cssText = `left:${Math.random() * 100}%;animation-duration:${Math.random() * 4 + 3}s;animation-delay:${Math.random() * 10}s;width:${Math.random() * 2 + 1}px`;
+  dc.appendChild(d);
+}
+
+// Swiper
+new Swiper('.mySwiper', {
+  loop: true, speed: 700,
+  autoplay: { delay: 3500, disableOnInteraction: false },
+  slidesPerView: 1, spaceBetween: 20,
+  navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+  pagination: { el: '.swiper-pagination', clickable: true },
+  breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }
+});
+</script>
+</body>
+</html>
