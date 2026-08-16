@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="https://unpkg.com/swiper@10/swiper-bundle.min.css">
 <style>
 :root{
   --bg:#05080f; --bg2:#080d18; --surface:#0d1424;
@@ -69,6 +68,9 @@ nav.sc{background:rgba(5,8,15,.88);backdrop-filter:blur(20px);border-color:var(-
 /* status blip */
 .blip{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,200,87,.1);border:1px solid rgba(255,200,87,.3);color:var(--gold);font-size:.78rem;font-family:'JetBrains Mono',monospace;padding:.3rem .8rem;border-radius:20px;margin-top:1rem;animation:fu .7s ease both .5s}
 .blip::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);animation:blink 1.5s ease-in-out infinite}
+.blip.done{background:rgba(57,217,138,.1);border-color:rgba(57,217,138,.3);color:var(--green)}
+.blip.done::before{background:var(--green);animation:none}
+.solo-badge{display:inline-flex;align-items:center;gap:.4rem;background:var(--cyan-dim);border:1px solid rgba(0,224,255,.25);color:var(--cyan);font-size:.78rem;font-family:'JetBrains Mono',monospace;padding:.3rem .8rem;border-radius:20px;margin-top:1rem;margin-left:.6rem}
 @keyframes fu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 /* SECTIONS */
 .sec{padding:5rem 1.5rem} .sec.alt{background:var(--bg2)}
@@ -76,13 +78,22 @@ nav.sc{background:rgba(5,8,15,.88);backdrop-filter:blur(20px);border-color:var(-
 .slabel{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:.6rem}
 .stitle{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:.05em;margin-bottom:1.5rem}
 .stitle::after{content:'';display:block;width:50px;height:2px;background:linear-gradient(90deg,var(--accent),var(--gold));margin-top:.5rem;border-radius:2px}
-/* GALLERY */
-.mySwiper{width:100%;padding-bottom:3rem}
-.swiper-slide img{border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.6)}
-.swiper-button-next,.swiper-button-prev{color:var(--accent);background:rgba(255,107,53,.12);backdrop-filter:blur(6px);width:50px;height:50px;border-radius:50%}
-.swiper-button-next::after,.swiper-button-prev::after{font-size:.9rem}
-.swiper-pagination-bullet{background:rgba(255,255,255,.2)}
-.swiper-pagination-bullet-active{background:var(--accent)}
+/* GALLERY - custom carousel */
+.gwrap{position:relative;margin-top:1.5rem;display:flex;align-items:center;gap:1rem}
+.gtrack-viewport{overflow:hidden;border-radius:14px;flex:1 1 auto;min-width:0}
+.gtrack{display:flex;will-change:transform}
+.gtrack.dragging{transition:none!important}
+.gslide{flex:0 0 100%;padding:0 .5rem;box-sizing:border-box}
+.gslide img{width:100%;aspect-ratio:16/9;height:auto;object-fit:cover;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.6);cursor:zoom-in;transition:transform .3s;user-select:none;-webkit-user-drag:none}
+.gslide img:hover{transform:scale(1.015)}
+@media(min-width:640px){.gslide{flex:0 0 50%}}
+@media(min-width:1024px){.gslide{flex:0 0 33.3333%}}
+.gnav{position:static;flex:0 0 auto;width:46px;height:46px;border-radius:50%;background:rgba(255,107,53,.14);border:1px solid rgba(255,107,53,.3);color:var(--accent);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-size:.9rem;z-index:5;transition:background .2s,transform .2s}
+.gnav:hover{background:rgba(255,107,53,.3)}
+@media(max-width:640px){.gnav{display:none}.gwrap{gap:0}}
+.gdots{display:flex;justify-content:center;gap:.5rem;margin-top:1.2rem}
+.gdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .2s,transform .2s}
+.gdot.active{background:var(--accent);transform:scale(1.25)}
 /* FEATURES */
 .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
 .fc{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:1.4rem;transition:border-color .2s,transform .2s}
@@ -123,6 +134,25 @@ nav.sc{background:rgba(5,8,15,.88);backdrop-filter:blur(20px);border-color:var(-
 /* FOOTER */
 footer{background:var(--surface);border-top:1px solid var(--border2);text-align:center;padding:1.8rem;font-size:.82rem;color:var(--text3)}
 footer span{color:var(--cyan)}
+/* GALLERY - clickable hint */
+/* LIGHTBOX */
+.lb{position:fixed;inset:0;z-index:10000;background:rgba(3,5,10,.96);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s}
+.lb.open{opacity:1;visibility:visible}
+.lb-img-wrap{max-width:92vw;max-height:82vh;position:relative;display:flex;align-items:center;justify-content:center}
+.lb-img-wrap img{max-width:92vw;max-height:82vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.7);opacity:0;transform:scale(.96);transition:opacity .25s,transform .25s}
+.lb-img-wrap img.show{opacity:1;transform:scale(1)}
+.lb-close,.lb-next,.lb-prev{position:absolute;background:rgba(255,107,53,.14);border:1px solid rgba(255,107,53,.3);color:var(--accent);border-radius:50%;width:46px;height:46px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:background .2s,transform .2s;backdrop-filter:blur(6px)}
+.lb-close:hover,.lb-next:hover,.lb-prev:hover{background:rgba(255,107,53,.3);transform:scale(1.08)}
+.lb-close{top:1.4rem;right:1.4rem}
+.lb-prev{left:1.4rem;top:50%;transform:translateY(-50%)}
+.lb-next{right:1.4rem;top:50%;transform:translateY(-50%)}
+.lb-prev:hover,.lb-next:hover{transform:translateY(-50%) scale(1.08)}
+.lb-count{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text2);background:rgba(255,255,255,.06);border:1px solid var(--border2);padding:.3rem .9rem;border-radius:20px}
+@media(max-width:640px){.lb-prev,.lb-next{width:38px;height:38px;font-size:.9rem}.lb-close{width:38px;height:38px;top:.8rem;right:.8rem}.lb-prev{left:.6rem}.lb-next{right:.6rem}}
+/* BACK TO TOP */
+.totop{position:fixed;bottom:1.8rem;right:1.8rem;width:46px;height:46px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1rem;z-index:900;opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .3s,transform .3s,border-color .2s}
+.totop.show{opacity:1;visibility:visible;transform:none}
+.totop:hover{border-color:var(--accent);box-shadow:0 0 20px var(--accent-glow)}
 </style>
 </head>
 <body>
@@ -131,7 +161,7 @@ footer span{color:var(--cyan)}
 <!-- NAV -->
 <nav id="mnav">
   <div class="logo"><span class="logo-dot"></span>SHREE.DEV</div>
-  <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a>
+  <a href="index.html#projects" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a>
   
 </nav>
 
@@ -142,17 +172,18 @@ footer span{color:var(--cyan)}
   <div class="hglow-b"></div>
   <div class="bombs" id="bombs"></div>
   <div class="hcontent">
-    <div class="htag"><i class="fa-solid fa-bomb"></i> ANDROID · LOCAL MULTIPLAYER · IN DEVELOPMENT</div>
+    <div class="htag"><i class="fa-solid fa-bomb"></i> ANDROID · LOCAL MULTIPLAYER · COMPLETED</div>
     <h1 class="h1">BOMBER<br><span class="a">CLASH</span></h1>
-    <p class="hp">A fast-paced local multiplayer arena brawler for Android — host or join, pick your fighter, plant bombs, and dominate.</p>
+    <p class="hp">A fast-paced local multiplayer arena brawler for Android — host or join, pick your fighter, plant bombs, and dominate. Built solo, start to finish.</p>
     <div class="hmeta">
       <div class="mi"><div class="mlabel">Engine</div><div class="mval">Unreal Engine 5</div></div>
       <div class="mi"><div class="mlabel">Platform</div><div class="mval">Android</div></div>
       <div class="mi"><div class="mlabel">Mode</div><div class="mval">Local Multiplayer</div></div>
-      <div class="mi"><div class="mlabel">Status</div><div class="mval" style="color:var(--gold)">In Development</div></div>
+      <div class="mi"><div class="mlabel">Status</div><div class="mval" style="color:var(--green)">Completed</div></div>
+      <div class="mi"><div class="mlabel">Team</div><div class="mval" style="color:var(--cyan)">Solo Project</div></div>
     </div>
     <a class="dl-btn" href="https://shreemodak.itch.io/bomber-clash"><i class="fa-solid fa-bomb"></i>Have to Test Game??</a>
-    <div><span class="blip">Active Development</span></div>
+    <div><span class="blip done"><i class="fa-solid fa-check"></i> Completed</span><span class="solo-badge"><i class="fa-solid fa-user"></i> Solo Dev — Built Entirely by Me</span></div>
   </div>
 </section>
 
@@ -161,18 +192,20 @@ footer span{color:var(--cyan)}
   <div class="w reveal">
     <span class="slabel">// screenshots</span>
     <h2 class="stitle">Gallery</h2>
-    <div class="swiper mySwiper" style="margin-top:1.5rem">
-      <div class="swiper-wrapper">
-        <div class="swiper-slide"><img src="5.png" loading="lazy" alt="Bomber Clash"></div>
-        <div class="swiper-slide"><img src="1.jpeg" loading="lazy" alt="Bomber Clash 2"></div>
-        <div class="swiper-slide"><img src="2.jpeg" loading="lazy" alt="Bomber Clash 3"></div>
-        <div class="swiper-slide"><img src="3.jpeg" loading="lazy" alt="Bomber Clash 4"></div>
-        <div class="swiper-slide"><img src="4.jpeg" loading="lazy" alt="Bomber Clash 5"></div>
+    <div class="gwrap">
+      <button class="gnav gprev" id="gPrev" aria-label="Previous screenshot"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="gtrack-viewport">
+        <div class="gtrack" id="gTrack">
+          <div class="gslide"><img src="5.png" loading="lazy" alt="Bomber Clash screenshot 1"></div>
+          <div class="gslide"><img src="1.jpeg" loading="lazy" alt="Bomber Clash screenshot 2"></div>
+          <div class="gslide"><img src="2.jpeg" loading="lazy" alt="Bomber Clash screenshot 3"></div>
+          <div class="gslide"><img src="3.jpeg" loading="lazy" alt="Bomber Clash screenshot 4"></div>
+          <div class="gslide"><img src="4.jpeg" loading="lazy" alt="Bomber Clash screenshot 5"></div>
+        </div>
       </div>
-      <div class="swiper-pagination"></div>
-      <div class="swiper-button-next"></div>
-      <div class="swiper-button-prev"></div>
+      <button class="gnav gnext" id="gNext" aria-label="Next screenshot"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
+    <div class="gdots" id="gDots"></div>
   </div>
 </section>
 
@@ -191,6 +224,7 @@ footer span{color:var(--cyan)}
     <div class="tags">
       <span class="tag">UE5</span><span class="tag">Blueprints</span><span class="tag">LAN Replication</span>
       <span class="tag">Android</span><span class="tag">UMG</span><span class="tag">Multiplayer</span><span class="tag">Git</span>
+      <span class="tag" style="background:var(--cyan-dim);border-color:rgba(0,224,255,.2);color:var(--cyan)"><i class="fa-solid fa-user" style="margin-right:.3rem"></i>Solo Project</span>
     </div>
   </div>
 </section>
@@ -322,9 +356,22 @@ footer span{color:var(--cyan)}
   </div>
 </section>
 
+<!-- LIGHTBOX -->
+<div class="lb" id="lightbox">
+  <div class="lb-img-wrap">
+    <img id="lbImg" src="" alt="Bomber Clash screenshot">
+  </div>
+  <button class="lb-close" id="lbClose" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+  <button class="lb-prev" id="lbPrev" aria-label="Previous image"><i class="fa-solid fa-chevron-left"></i></button>
+  <button class="lb-next" id="lbNext" aria-label="Next image"><i class="fa-solid fa-chevron-right"></i></button>
+  <div class="lb-count" id="lbCount"></div>
+</div>
+
+<!-- BACK TO TOP -->
+<button class="totop" id="totop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
 <footer><p>© <span id="yr"></span> <span>Shree Modak</span> · Unreal Engine Developer</p></footer>
 
-<script src="https://unpkg.com/swiper@10/swiper-bundle.min.js"></script>
 <script>
 document.getElementById('yr').textContent=new Date().getFullYear();
 window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('pbar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';document.getElementById('mnav').classList.toggle('sc',window.scrollY>50)});
@@ -334,7 +381,169 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 const c=document.getElementById('bombs');
 const em=['💣','💥','🔥'];
 for(let i=0;i<14;i++){const b=document.createElement('div');b.className='bomb';b.textContent=em[i%3];b.style.cssText=`left:${Math.random()*100}%;font-size:${Math.random()*18+12}px;animation-duration:${Math.random()*10+12}s;animation-delay:${Math.random()*14}s;`;c.appendChild(b)}
-new Swiper('.mySwiper',{loop:true,speed:700,autoplay:{delay:3500,disableOnInteraction:false},slidesPerView:1,spaceBetween:20,navigation:{nextEl:'.swiper-button-next',prevEl:'.swiper-button-prev'},pagination:{el:'.swiper-pagination',clickable:true},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:3}}});
+// ===== CUSTOM INFINITE GALLERY (no autoplay) =====
+const gTrack=document.getElementById('gTrack');
+const realSlides=Array.from(gTrack.children);
+const slideCount=realSlides.length;
+const galleryImgs=realSlides.map(s=>{const img=s.querySelector('img');return{src:img.getAttribute('src'),alt:img.getAttribute('alt')||''};});
+
+// clone last -> front, first -> back, for seamless infinite loop in both directions
+const firstClone=realSlides[0].cloneNode(true);
+const lastClone=realSlides[slideCount-1].cloneNode(true);
+firstClone.setAttribute('aria-hidden','true');
+lastClone.setAttribute('aria-hidden','true');
+gTrack.appendChild(firstClone);
+gTrack.insertBefore(lastClone,realSlides[0]);
+
+let curIndex=1; // 1..slideCount map to real slides (0 = clone of last, slideCount+1 = clone of first)
+let slideWidthPct=100;
+
+function getPerView(){
+  const w=window.innerWidth;
+  if(w>=1024)return 3;
+  if(w>=640)return 2;
+  return 1;
+}
+function layout(){
+  slideWidthPct=100/getPerView();
+  Array.from(gTrack.children).forEach(s=>s.style.flexBasis=slideWidthPct+'%');
+  gTrack.style.transition='none';
+  gTrack.style.transform=`translateX(-${curIndex*slideWidthPct}%)`;
+  requestAnimationFrame(()=>{gTrack.style.transition='';});
+}
+function goTo(index,animate=true){
+  curIndex=index;
+  gTrack.style.transition=animate?'transform .5s cubic-bezier(.4,0,.2,1)':'none';
+  gTrack.style.transform=`translateX(-${curIndex*slideWidthPct}%)`;
+  updateDots();
+}
+function next(){goTo(curIndex+1);}
+function prev(){goTo(curIndex-1);}
+
+// seamless jump when landing on a clone
+gTrack.addEventListener('transitionend',()=>{
+  if(curIndex===0){goTo(slideCount,false);}
+  else if(curIndex===slideCount+1){goTo(1,false);}
+});
+
+// dots (map real slide 0..slideCount-1)
+const gDots=document.getElementById('gDots');
+galleryImgs.forEach((_,i)=>{
+  const d=document.createElement('button');
+  d.className='gdot'+(i===0?' active':'');
+  d.setAttribute('aria-label','Go to screenshot '+(i+1));
+  d.addEventListener('click',()=>goTo(i+1));
+  gDots.appendChild(d);
+});
+function updateDots(){
+  let realIdx=((curIndex-1)+slideCount)%slideCount;
+  Array.from(gDots.children).forEach((d,i)=>d.classList.toggle('active',i===realIdx));
+}
+
+document.getElementById('gNext').addEventListener('click',next);
+document.getElementById('gPrev').addEventListener('click',prev);
+
+// drag / swipe support
+let isDown=false,startX=0,startTranslate=0,viewportW=1,dragMoved=false;
+const viewport=document.querySelector('.gtrack-viewport');
+function pointerX(e){return e.touches?e.touches[0].clientX:e.clientX;}
+function dragStart(e){
+  isDown=true;
+  dragMoved=false;
+  startX=pointerX(e);
+  viewportW=viewport.getBoundingClientRect().width;
+  startTranslate=-curIndex*slideWidthPct;
+  gTrack.classList.add('dragging');
+}
+function dragMove(e){
+  if(!isDown)return;
+  const dx=pointerX(e)-startX;
+  if(Math.abs(dx)>6)dragMoved=true;
+  const dPct=(dx/viewportW)*100;
+  gTrack.style.transform=`translateX(${startTranslate+dPct}%)`;
+}
+function dragEnd(e){
+  if(!isDown)return;
+  isDown=false;
+  gTrack.classList.remove('dragging');
+  const dx=(e.changedTouches?e.changedTouches[0].clientX:e.clientX)-startX;
+  if(Math.abs(dx)>50){dx>0?prev():next();}
+  else{goTo(curIndex);}
+}
+viewport.addEventListener('mousedown',dragStart);
+window.addEventListener('mousemove',dragMove);
+window.addEventListener('mouseup',dragEnd);
+viewport.addEventListener('touchstart',dragStart,{passive:true});
+viewport.addEventListener('touchmove',dragMove,{passive:true});
+viewport.addEventListener('touchend',dragEnd);
+
+window.addEventListener('resize',layout);
+layout();
+updateDots();
+
+// LIGHTBOX
+const lb=document.getElementById('lightbox');
+const lbImg=document.getElementById('lbImg');
+const lbCount=document.getElementById('lbCount');
+let lbIndex=0;
+
+function openLightbox(i){
+  lbIndex=(i+galleryImgs.length)%galleryImgs.length;
+  showLbImage();
+  lb.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function showLbImage(){
+  lbImg.classList.remove('show');
+  const item=galleryImgs[lbIndex];
+  const preload=new Image();
+  preload.onload=()=>{
+    lbImg.src=item.src;
+    lbImg.alt=item.alt;
+    requestAnimationFrame(()=>lbImg.classList.add('show'));
+  };
+  preload.src=item.src;
+  lbCount.textContent=`${lbIndex+1} / ${galleryImgs.length}`;
+}
+function closeLightbox(){
+  lb.classList.remove('open');
+  document.body.style.overflow='';
+}
+function lbNextImg(){openLbAt(lbIndex+1)}
+function lbPrevImg(){openLbAt(lbIndex-1)}
+function openLbAt(i){lbIndex=(i+galleryImgs.length)%galleryImgs.length;showLbImage();}
+
+// event delegation so it always works, even on cloned slides
+gTrack.addEventListener('click',e=>{
+  if(dragMoved){dragMoved=false;return;}
+  const img=e.target.closest('img');
+  if(!img)return;
+  const src=img.getAttribute('src');
+  const idx=galleryImgs.findIndex(g=>g.src===src);
+  openLightbox(idx>=0?idx:0);
+});
+
+document.getElementById('lbClose').addEventListener('click',closeLightbox);
+document.getElementById('lbNext').addEventListener('click',lbNextImg);
+document.getElementById('lbPrev').addEventListener('click',lbPrevImg);
+lb.addEventListener('click',e=>{if(e.target===lb)closeLightbox();});
+document.addEventListener('keydown',e=>{
+  if(!lb.classList.contains('open'))return;
+  if(e.key==='Escape')closeLightbox();
+  if(e.key==='ArrowRight')lbNextImg();
+  if(e.key==='ArrowLeft')lbPrevImg();
+});
+let lbTouchStartX=0;
+lb.addEventListener('touchstart',e=>{lbTouchStartX=e.changedTouches[0].screenX;},{passive:true});
+lb.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].screenX-lbTouchStartX;
+  if(Math.abs(dx)>40){dx>0?lbPrevImg():lbNextImg();}
+},{passive:true});
+
+// BACK TO TOP
+const totop=document.getElementById('totop');
+window.addEventListener('scroll',()=>{totop.classList.toggle('show',window.scrollY>500);});
+totop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 </script>
 </body>
 </html>
