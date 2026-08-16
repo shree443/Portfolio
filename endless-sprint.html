@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Endless Sprint — Shree Modak</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+:root{
+  --bg:#050708;
+  --bg2:#080b0d;
+  --surface:#0d1315;
+
+  --border:rgba(255,106,0,.09);
+  --border2:rgba(255,255,255,.05);
+
+  --cyan:#00e0ff;
+  --cyan-dim:rgba(0,224,255,.12);
+
+  --gold:#ffc857;
+  --green:#39d98a;
+
+  --text:#eaf2f0;
+  --text2:#7b8c88;
+  --text3:#495753;
+
+  --r:12px;
+  --nav:68px;
+
+  /* speed / runner accent */
+  --accent:#ff5e1a;
+  --accent-bright:#ff8140;
+  --accent-dim:rgba(255,94,26,.14);
+  --accent-glow:rgba(255,94,26,.4);
+}
+
+*,
+*::before,
+*::after{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:var(--nav);
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Sora',sans-serif;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+img{
+  max-width:100%;
+  display:block;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+button{
+  font-family:inherit;
+  cursor:pointer;
+}
+
+::-webkit-scrollbar{
+  width:4px;
+}
+
+::-webkit-scrollbar-track{
+  background:var(--bg);
+}
+
+::-webkit-scrollbar-thumb{
+  background:var(--accent);
+  border-radius:4px;
+}
+
+body::after{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:9999;
+  opacity:.5;
+}
+
+/* PROGRESS */
+
+#pbar{
+  position:fixed;
+  top:0;
+  left:0;
+  height:2px;
+  width:0%;
+  background:linear-gradient(90deg,var(--accent),var(--cyan));
+  z-index:9998;
+}
+
+/* NAV */
+
+nav{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:1000;
+
+  height:var(--nav);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 2.5rem;
+
+  border-bottom:1px solid transparent;
+  transition:.3s;
+}
+
+nav.sc{
+  background:rgba(5,7,8,.88);
+  backdrop-filter:blur(20px);
+  border-color:var(--border2);
+}
+
+.logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.6rem;
+  letter-spacing:.12em;
+  color:var(--accent-bright);
+
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+
+.logo-dot{
+  width:8px;
+  height:8px;
+  background:var(--accent-bright);
+  border-radius:50%;
+  animation:blink 2s ease-in-out infinite;
+}
+
+@keyframes blink{
+  0%,100%{opacity:1}
+  50%{opacity:.2}
+}
+
+.back-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+
+  color:var(--text2);
+
+  font-weight:600;
+  font-size:.92rem;
+
+  transition:color .2s,gap .2s;
+}
+
+.back-btn:hover{
+  color:var(--accent-bright);
+  gap:.8rem;
+}
+
+.hnav{
+  display:flex;
+  gap:1.8rem;
+}
+
+.hnav a{
+  font-size:.82rem;
+  font-weight:500;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text2);
+  transition:color .2s;
+}
+
+.hnav a:hover{
+  color:var(--accent-bright);
+}
+
+@media(max-width:640px){
+  .hnav{
+    display:none;
+  }
+}
+
+/* REVEAL */
+
+.reveal{
+  opacity:0;
+  transform:translateY(30px);
+  transition:opacity .7s,transform .7s;
+}
+
+.reveal.left{
+  transform:translateX(-30px);
+}
+
+.reveal.right{
+  transform:translateX(30px);
+}
+
+.reveal.visible{
+  opacity:1;
+  transform:none;
+}
+
+/* HERO */
+
+.hero{
+  min-height:85vh;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
+
+  padding:calc(var(--nav) + 4rem) 1.5rem 5rem;
+
+  position:relative;
+  overflow:hidden;
+}
+
+.hgrid{
+  position:absolute;
+  inset:0;
+
+  background-image:
+  linear-gradient(rgba(255,94,26,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,94,26,.05) 1px,transparent 1px);
+
+  background-size:64px 64px;
+
+  mask-image:radial-gradient(
+    ellipse 80% 65% at 50% 50%,
+    black 20%,
+    transparent 100%
+  );
+
+  animation:gs 24s linear infinite;
+}
+
+@keyframes gs{
+  0%{background-position:0 0}
+  100%{background-position:64px 64px}
+}
+
+.hglow-a{
+  position:absolute;
+  width:700px;
+  height:700px;
+  border-radius:50%;
+  filter:blur(90px);
+
+  background:rgba(255,94,26,.1);
+
+  top:-150px;
+  left:-100px;
+
+  animation:brt 8s ease-in-out infinite;
+  pointer-events:none;
+}
+
+.hglow-b{
+  position:absolute;
+  width:500px;
+  height:500px;
+  border-radius:50%;
+  filter:blur(90px);
+
+  background:rgba(0,224,255,.05);
+
+  bottom:-100px;
+  right:-100px;
+
+  animation:brt 10s ease-in-out infinite reverse;
+  pointer-events:none;
+}
+
+@keyframes brt{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.2)}
+}
+
+/* FLOATING */
+
+.ghosts{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.ghost{
+  position:absolute;
+  font-size:1.6rem;
+  opacity:0;
+  animation:ghostUp linear infinite;
+}
+
+@keyframes ghostUp{
+  0%{
+    transform:translateY(110vh) rotate(0deg);
+    opacity:0;
+  }
+
+  8%{
+    opacity:.3;
+  }
+
+  92%{
+    opacity:.15;
+  }
+
+  100%{
+    transform:translateY(-20vh) rotate(360deg);
+    opacity:0;
+  }
+}
+
+.hcontent{
+  position:relative;
+  z-index:2;
+  max-width:780px;
+}
+
+.htag{
+  display:inline-flex;
+  align-items:center;
+  gap:.55rem;
+
+  background:var(--accent-dim);
+
+  border:1px solid rgba(255,94,26,.3);
+
+  border-radius:24px;
+
+  padding:.32rem 1.1rem;
+
+  font-family:'JetBrains Mono',monospace;
+  font-size:.74rem;
+
+  color:var(--accent-bright);
+
+  letter-spacing:.1em;
+
+  margin-bottom:1.8rem;
+
+  animation:fu .7s ease both;
+}
+
+.h1{
+  font-family:'Bebas Neue',sans-serif;
+
+  font-size:clamp(3rem,10vw,6.5rem);
+
+  letter-spacing:.04em;
+  line-height:.95;
+
+  animation:fu .7s ease both .12s;
+
+  text-shadow:0 0 60px rgba(255,94,26,.4);
+}
+
+.h1 .a{
+  color:var(--accent-bright);
+}
+
+.hp{
+  color:var(--text2);
+
+  font-size:1.05rem;
+  font-weight:300;
+
+  max-width:540px;
+
+  margin:1.2rem auto 0;
+
+  animation:fu .7s ease both .22s;
+}
+
+.hmeta{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:2rem;
+
+  margin-top:2.5rem;
+
+  animation:fu .7s ease both .32s;
+}
+
+.mi{
+  text-align:center;
+}
+
+.mlabel{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--text3);
+
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.mval{
+  font-weight:600;
+  font-size:.95rem;
+  margin-top:.15rem;
+}
+
+.dl-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:.6rem;
+
+  background:linear-gradient(135deg,var(--accent),var(--gold));
+
+  color:#0b0d0e;
+
+  padding:1rem 2.2rem;
+
+  border-radius:8px;
+
+  font-weight:700;
+  font-size:1rem;
+
+  box-shadow:0 0 30px var(--accent-glow);
+
+  transition:transform .2s,box-shadow .2s;
+
+  margin-top:2rem;
+
+  animation:fu .7s ease both .42s;
+}
+
+.dl-btn:hover{
+  transform:translateY(-4px) scale(1.02);
+  box-shadow:0 0 50px var(--accent-glow);
+}
+
+.blip{
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+
+  background:rgba(57,217,138,.08);
+
+  border:1px solid rgba(57,217,138,.25);
+
+  color:var(--green);
+
+  font-size:.78rem;
+  font-family:'JetBrains Mono',monospace;
+
+  padding:.3rem .8rem;
+  border-radius:20px;
+
+  margin-top:1rem;
+
+  animation:fu .7s ease both .5s;
+}
+
+.blip::before{
+  content:'';
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--green);
+  animation:blink 1.5s ease-in-out infinite;
+}
+
+@keyframes fu{
+  from{
+    opacity:0;
+    transform:translateY(24px);
+  }
+
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+/* SECTIONS */
+
+.sec{
+  padding:5rem 1.5rem;
+}
+
+.sec.alt{
+  background:var(--bg2);
+}
+
+.w{
+  max-width:1000px;
+  margin:0 auto;
+}
+
+.slabel{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+
+  color:var(--accent-bright);
+
+  letter-spacing:.18em;
+  text-transform:uppercase;
+
+  display:block;
+  margin-bottom:.6rem;
+}
+
+.stitle{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(1.8rem,4vw,2.6rem);
+
+  letter-spacing:.05em;
+
+  margin-bottom:1.5rem;
+}
+
+.stitle::after{
+  content:'';
+  display:block;
+
+  width:50px;
+  height:2px;
+
+  background:linear-gradient(90deg,var(--accent),var(--cyan));
+
+  margin-top:.5rem;
+  border-radius:2px;
+}
+
+/* GALLERY - custom carousel */
+.gwrap{position:relative;margin-top:1.5rem;display:flex;align-items:center;gap:1rem}
+.gtrack-viewport{overflow:hidden;border-radius:14px;flex:1 1 auto;min-width:0}
+.gtrack{display:flex;will-change:transform}
+.gtrack.dragging{transition:none!important}
+.gslide{flex:0 0 100%;padding:0 .5rem;box-sizing:border-box}
+.gslide img{width:100%;aspect-ratio:16/9;height:auto;object-fit:cover;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.6);cursor:zoom-in;transition:transform .3s;user-select:none;-webkit-user-drag:none;background:#0d1315}
+.gslide img:hover{transform:scale(1.015)}
+@media(min-width:640px){.gslide{flex:0 0 50%}}
+@media(min-width:1024px){.gslide{flex:0 0 33.3333%}}
+.gnav{position:static;flex:0 0 auto;width:46px;height:46px;border-radius:50%;background:rgba(255,94,26,.14);border:1px solid rgba(255,94,26,.3);color:var(--accent-bright);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-size:.9rem;z-index:5;transition:background .2s,transform .2s}
+.gnav:hover{background:rgba(255,94,26,.3)}
+@media(max-width:640px){.gnav{display:none}.gwrap{gap:0}}
+.gdots{display:flex;justify-content:center;gap:.5rem;margin-top:1.2rem}
+.gdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .2s,transform .2s}
+.gdot.active{background:var(--accent-bright);transform:scale(1.25)}
+/* LIGHTBOX */
+.lb{position:fixed;inset:0;z-index:10000;background:rgba(3,4,5,.96);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s}
+.lb.open{opacity:1;visibility:visible}
+.lb-img-wrap{max-width:92vw;max-height:82vh;position:relative;display:flex;align-items:center;justify-content:center}
+.lb-img-wrap img{max-width:92vw;max-height:82vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.7);opacity:0;transform:scale(.96);transition:opacity .25s,transform .25s}
+.lb-img-wrap img.show{opacity:1;transform:scale(1)}
+.lb-close,.lb-next,.lb-prev{position:absolute;background:rgba(255,94,26,.14);border:1px solid rgba(255,94,26,.3);color:var(--accent-bright);border-radius:50%;width:46px;height:46px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:background .2s,transform .2s;backdrop-filter:blur(6px)}
+.lb-close:hover,.lb-next:hover,.lb-prev:hover{background:rgba(255,94,26,.3);transform:scale(1.08)}
+.lb-close{top:1.4rem;right:1.4rem}
+.lb-prev{left:1.4rem;top:50%;transform:translateY(-50%)}
+.lb-next{right:1.4rem;top:50%;transform:translateY(-50%)}
+.lb-prev:hover,.lb-next:hover{transform:translateY(-50%) scale(1.08)}
+.lb-count{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text2);background:rgba(255,255,255,.06);border:1px solid var(--border2);padding:.3rem .9rem;border-radius:20px}
+@media(max-width:640px){.lb-prev,.lb-next{width:38px;height:38px;font-size:.9rem}.lb-close{width:38px;height:38px;top:.8rem;right:.8rem}.lb-prev{left:.6rem}.lb-next{right:.6rem}}
+
+/* FEATURES */
+
+.fgrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:1rem;
+}
+
+.fc{
+  background:var(--surface);
+
+  border:1px solid var(--border2);
+
+  border-radius:var(--r);
+
+  padding:1.4rem;
+
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+}
+
+.fc:hover{
+  border-color:var(--accent);
+  transform:translateY(-3px);
+  box-shadow:0 8px 30px rgba(255,94,26,.1);
+}
+
+.fi{
+  color:var(--accent-bright);
+  font-size:1.3rem;
+  margin-bottom:.6rem;
+}
+
+.ft{
+  font-weight:600;
+  margin-bottom:.3rem;
+}
+
+.fd{
+  font-size:.87rem;
+  color:var(--text2);
+}
+
+/* TAGS */
+
+.tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+  margin-top:1.2rem;
+}
+
+.tag{
+  background:var(--accent-dim);
+
+  border:1px solid rgba(255,94,26,.2);
+
+  color:var(--accent-bright);
+
+  font-size:.73rem;
+  font-family:'JetBrains Mono',monospace;
+
+  padding:.25rem .65rem;
+  border-radius:4px;
+}
+
+/* TWO COL */
+
+.two{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:3rem;
+  align-items:start;
+}
+
+@media(max-width:640px){
+  .two{
+    grid-template-columns:1fr;
+    gap:2rem;
+  }
+}
+
+/* THEME CARDS */
+
+.themegrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:1rem;
+  margin-top:1.5rem;
+}
+
+.themecard{
+  background:var(--surface);
+
+  border:1px solid var(--border2);
+
+  border-radius:14px;
+
+  padding:1.4rem;
+
+  position:relative;
+  overflow:hidden;
+
+  transition:border-color .25s,transform .25s;
+}
+
+.themecard::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:3px;
+  background:var(--tcolor,var(--accent));
+}
+
+.themecard:hover{
+  transform:translateY(-4px);
+  border-color:var(--tcolor,var(--accent));
+}
+
+.tswatch{
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  background:var(--tcolor,var(--accent));
+  margin-bottom:.9rem;
+  box-shadow:0 0 20px var(--tcolor,var(--accent));
+}
+
+.tname{
+  font-weight:600;
+  font-size:.95rem;
+  margin-bottom:.25rem;
+}
+
+.tdesc{
+  font-size:.82rem;
+  color:var(--text2);
+}
+
+/* MODE CARDS */
+
+.modegrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:1rem;
+  margin-top:1.5rem;
+}
+
+.modecard{
+  background:var(--surface);
+
+  border:1px solid var(--border2);
+
+  border-radius:10px;
+
+  padding:1.2rem;
+  text-align:center;
+
+  transition:border-color .2s,transform .2s;
+}
+
+.modecard:hover{
+  border-color:rgba(255,94,26,.35);
+  transform:translateY(-3px);
+}
+
+.mode-icon{
+  font-size:1.8rem;
+  color:var(--accent-bright);
+  margin-bottom:.6rem;
+}
+
+.mode-name{
+  font-weight:600;
+  font-size:.95rem;
+  margin-bottom:.25rem;
+}
+
+.mode-desc{
+  font-size:.82rem;
+  color:var(--text2);
+}
+
+/* PATCH */
+
+.patch{
+  background:var(--surface);
+
+  border:1px solid var(--border2);
+
+  border-radius:10px;
+
+  padding:1rem 1.2rem;
+
+  margin-bottom:.8rem;
+
+  transition:border-color .2s;
+}
+
+.patch:hover{
+  border-color:rgba(255,94,26,.3);
+}
+
+.pver{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.78rem;
+  color:var(--cyan);
+  margin-bottom:.3rem;
+}
+
+.pdesc{
+  font-size:.88rem;
+  color:var(--text2);
+}
+
+/* REQ GRID */
+
+.rgrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.8rem;
+}
+
+@media(max-width:480px){
+  .rgrid{
+    grid-template-columns:1fr;
+  }
+}
+
+.ri{
+  background:var(--surface);
+
+  border:1px solid var(--border2);
+
+  border-radius:8px;
+
+  padding:.9rem 1rem;
+}
+
+.rl{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--text3);
+
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.rv{
+  font-weight:600;
+  margin-top:.2rem;
+}
+
+/* BUTTONS */
+
+.btn-a{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+
+  background:var(--accent);
+
+  color:#0b0d0e;
+
+  padding:.8rem 2rem;
+
+  border-radius:8px;
+
+  font-weight:700;
+  font-size:.92rem;
+
+  transition:transform .2s,box-shadow .2s;
+
+  box-shadow:0 0 18px var(--accent-glow);
+}
+
+.btn-a:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 35px var(--accent-glow);
+}
+
+.btn-g{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+
+  background:transparent;
+
+  color:var(--text);
+
+  border:1px solid var(--border2);
+
+  padding:.8rem 2rem;
+
+  border-radius:8px;
+
+  font-weight:600;
+  font-size:.92rem;
+
+  margin-left:.8rem;
+
+  transition:border-color .2s,color .2s;
+}
+
+.btn-g:hover{
+  border-color:var(--accent);
+  color:var(--accent-bright);
+}
+
+/* CTA */
+
+.ctacard{
+  background:var(--surface);
+
+  border:1px solid var(--border2);
+
+  border-radius:16px;
+
+  padding:3rem;
+  text-align:center;
+}
+
+.ctacard h3{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2rem;
+  letter-spacing:.06em;
+  margin-bottom:.5rem;
+}
+
+.ctacard p{
+  color:var(--text2);
+  margin-bottom:2rem;
+}
+
+/* FOOTER */
+
+footer{
+  background:var(--surface);
+
+  border-top:1px solid var(--border2);
+
+  text-align:center;
+
+  padding:1.8rem;
+
+  font-size:.82rem;
+
+  color:var(--text3);
+}
+
+footer span{
+  color:var(--accent-bright);
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="pbar"></div>
+
+<!-- NAV -->
+
+<nav id="mnav">
+  <div class="logo">
+    <span class="logo-dot"></span>
+    SHREE.DEV
+  </div>
+
+  <a href="index.html#projects" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i>
+    Back to Portfolio
+  </a>
+
+  <div class="hnav">
+    <a href="#gallery">Gallery</a>
+    <a href="#features">Features</a>
+    <a href="#Challenges">Challenges</a>
+    <a href="#system">Systems</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+
+  <div class="hgrid"></div>
+  <div class="hglow-a"></div>
+  <div class="hglow-b"></div>
+
+  <div class="ghosts" id="ghosts"></div>
+
+  <div class="hcontent">
+
+    <div class="htag">
+      <i class="fa-solid fa-person-running"></i>
+      PC · ENDLESS RUNNER · SOLO PROJECT · COMPLETED
+    </div>
+
+    <h1 class="h1">
+      ENDLESS<br>
+      <span class="a">SPRINT</span>
+    </h1>
+
+    <p class="hp">
+      A fast-paced 3-lane endless runner built in Unreal Engine 5, featuring lane switching, jump and duck mechanics, a lifeline system, an in-run hint system, multiple visual themes, and selectable game modes.
+    </p>
+
+    <div class="hmeta">
+
+      <div class="mi">
+        <div class="mlabel">Engine</div>
+        <div class="mval">Unreal Engine 5</div>
+      </div>
+
+      <div class="mi">
+        <div class="mlabel">Platform</div>
+        <div class="mval">Windows PC</div>
+      </div>
+
+      <div class="mi">
+        <div class="mlabel">Genre</div>
+        <div class="mval">Endless Runner</div>
+      </div>
+
+      <div class="mi">
+        <div class="mlabel">Status</div>
+        <div class="mval" style="color:var(--green)">Completed</div>
+      </div>
+
+    </div>
+
+    <a class="dl-btn" href="https://youtu.be/d6NTscUaNbY?si=ihPEU7MIJKqaGzc8" target="_blank">
+      <i class="fa-solid fa-play"></i>
+      Watch Gameplay
+    </a>
+
+    <div>
+      <span class="blip">Completed Project</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- GALLERY -->
+
+<section id="gallery" class="sec alt">
+
+  <div class="w reveal">
+
+    <span class="slabel">// screenshots</span>
+    <h2 class="stitle">Gallery</h2>
+
+    <div class="gwrap">
+      <button class="gnav gprev" id="gPrev" aria-label="Previous screenshot"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="gtrack-viewport">
+        <div class="gtrack" id="gTrack">
+          <div class="gslide"><img src="Endless (6).jpg" loading="lazy" alt="Endless Sprint screenshot 1"></div>
+          <div class="gslide"><img src="Endless (5).jpg" loading="lazy" alt="Endless Sprint screenshot 2"></div>
+          <div class="gslide"><img src="Endless (3).jpg" loading="lazy" alt="Endless Sprint screenshot 3"></div>
+          <div class="gslide"><img src="Endless (2).jpg" loading="lazy" alt="Endless Sprint screenshot 4"></div>
+          <div class="gslide"><img src="Endless (1).jpg" loading="lazy" alt="Endless Sprint screenshot 5"></div>
+          <div class="gslide"><img src="Endless (4).jpg" loading="lazy" alt="Endless Sprint screenshot 6"></div>
+        </div>
+      </div>
+      <button class="gnav gnext" id="gNext" aria-label="Next screenshot"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="gdots" id="gDots"></div>
+
+  </div>
+
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lightbox">
+  <div class="lb-img-wrap">
+    <img id="lbImg" src="" alt="Endless Sprint screenshot">
+  </div>
+  <button class="lb-close" id="lbClose" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+  <button class="lb-prev" id="lbPrev" aria-label="Previous image"><i class="fa-solid fa-chevron-left"></i></button>
+  <button class="lb-next" id="lbNext" aria-label="Next image"><i class="fa-solid fa-chevron-right"></i></button>
+  <div class="lb-count" id="lbCount"></div>
+</div>
+
+<!-- FEATURES -->
+
+<section id="features" class="sec">
+
+  <div class="w">
+
+    <div class="reveal">
+      <span class="slabel">// what's inside</span>
+      <h2 class="stitle">Game Features</h2>
+    </div>
+
+    <div class="fgrid">
+
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-arrows-left-right"></i></div>
+        <div class="ft">3-Lane Switching</div>
+        <div class="fd">
+          Smooth left/right lane-change movement across a 3-lane track with input buffering for responsive direction changes.
+        </div>
+      </div>
+
+
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-heart-pulse"></i></div>
+        <div class="ft">Lifeline System</div>
+        <div class="fd">
+          Limited lifelines absorb a collision instead of ending the run instantly, giving players a short recovery window.
+        </div>
+      </div>
+
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-lightbulb"></i></div>
+        <div class="ft">Hint System</div>
+        <div class="fd">
+          Contextual on-screen hints warn of upcoming obstacle patterns and recommended lane/action just before they arrive.
+        </div>
+      </div>
+
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-palette"></i></div>
+        <div class="ft">Multiple Themes</div>
+        <div class="fd">
+          Swappable visual themes reskin the track, obstacles, lighting, and skybox without changing core gameplay logic.
+        </div>
+      </div>
+
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-list-check"></i></div>
+        <div class="ft">Mode Selection</div>
+        <div class="fd">
+          Choose between different play modes before starting a run, each with its own pacing and difficulty curve.
+        </div>
+      </div>
+
+      <div class="fc reveal">
+        <div class="fi"><i class="fa-solid fa-gauge-high"></i></div>
+        <div class="ft">Procedural Difficulty Scaling</div>
+        <div class="fd">
+          Obstacle density and run speed scale up over distance to keep runs challenging as the score climbs.
+        </div>
+      </div>
+
+     
+
+    </div>
+
+    <div class="tags">
+      <span class="tag">UE5</span>
+      <span class="tag">Blueprints</span>
+      <span class="tag">Endless Runner</span>
+      <span class="tag">Lane System</span>
+      <span class="tag">UMG</span>
+      <span class="tag">PC</span>
+      <span class="tag">Arcade</span>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- THEMES -->
+
+<section class="sec alt">
+
+  <div class="w">
+
+    <div class="reveal">
+      <span class="slabel">// customization</span>
+      <h2 class="stitle">Themes</h2>
+    </div>
+
+    <div class="themegrid">
+
+      <div class="themecard reveal" style="--tcolor:#8a4b2f">
+        <div class="tswatch"></div>
+        <div class="tname">Chocolate</div>
+        <div class="tdesc">Rich cocoa-toned track with candy obstacles and a warm, gooey confectionery world.</div>
+      </div>
+
+      <div class="themecard reveal" style="--tcolor:#ff5e1a">
+        <div class="tswatch"></div>
+        <div class="tname">Toy Story</div>
+        <div class="tdesc">Playroom-scale track with toy-box obstacles and a bright, whimsical bedroom setting.</div>
+      </div>
+
+      <div class="themecard reveal" style="--tcolor:#00e0ff">
+        <div class="tswatch"></div>
+        <div class="tname">Terrace</div>
+        <div class="tdesc">Open rooftop terrace with planters, railings, and skyline views for a breezy daylight run.</div>
+      </div>
+
+      <div class="themecard reveal" style="--tcolor:#39d98a">
+        <div class="tswatch"></div>
+        <div class="tname">Obby</div>
+        <div class="tdesc">Blocky obstacle-course styling with platform-game colors and stylized checkpoint markers.</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- MODES -->
+
+<section class="sec">
+
+  <div class="w">
+
+    <div class="reveal">
+      <span class="slabel">// mode selection</span>
+      <h2 class="stitle">Game Modes</h2>
+    </div>
+
+    <div class="modegrid">
+
+      <div class="modecard reveal">
+        <div class="mode-icon"><i class="fa-solid fa-seedling"></i></div>
+        <div class="mode-name">Simple</div>
+        <div class="mode-desc">Obstacles limited to jump and left/right lane switches — an easy entry point for new players.</div>
+      </div>
+
+      <div class="modecard reveal">
+        <div class="mode-icon"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
+        <div class="mode-name">Little Difficult</div>
+        <div class="mode-desc">Adds duck obstacles on top of jump and left/right, requiring quicker reflex combinations.</div>
+      </div>
+
+      <div class="modecard reveal">
+        <div class="mode-icon"><i class="fa-solid fa-road-barrier"></i></div>
+        <div class="mode-name">Difficult</div>
+        <div class="mode-desc">Introduces full-width banner obstacles that block all lanes except one designated entry lane.</div>
+      </div>
+
+      <div class="modecard reveal">
+        <div class="mode-icon"><i class="fa-solid fa-fire"></i></div>
+        <div class="mode-name">More Difficult</div>
+        <div class="mode-desc">Mixes every obstacle type — jump, duck, lane switches, and single-lane banners — at maximum pace.</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- SYSTEM -->
+
+<section id="system" class="sec alt">
+
+  <div class="w">
+
+    <div class="reveal">
+      <span class="slabel">// systems & performance</span>
+      <h2 class="stitle">System Overview</h2>
+    </div>
+
+    <div class="two" style="margin-top:2rem">
+
+      <!-- REQUIREMENTS -->
+
+      <div class="reveal left">
+
+        <h3 style="
+          font-family:'Bebas Neue',sans-serif;
+          letter-spacing:.06em;
+          font-size:1.2rem;
+          margin-bottom:1rem;
+          color:var(--text3)
+        ">
+          SYSTEM REQUIREMENTS
+        </h3>
+
+        <div class="rgrid">
+
+          <div class="ri">
+            <div class="rl">OS</div>
+            <div class="rv">Windows 10 / 11</div>
+          </div>
+
+          <div class="ri">
+            <div class="rl">RAM</div>
+            <div class="rv">8 GB minimum</div>
+          </div>
+
+          <div class="ri">
+            <div class="rl">Storage</div>
+            <div class="rv">3–4 GB free</div>
+          </div>
+
+          <div class="ri">
+            <div class="rl">CPU</div>
+            <div class="rv">Intel i5 / Ryzen 5</div>
+          </div>
+
+          <div class="ri">
+            <div class="rl">GPU</div>
+            <div class="rv">GTX 1650 / RX 570</div>
+          </div>
+
+          <div class="ri">
+            <div class="rl">Engine</div>
+            <div class="rv">Unreal Engine 5</div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- DESIGN -->
+
+      <div class="reveal right">
+
+        <h3 style="
+          font-family:'Bebas Neue',sans-serif;
+          letter-spacing:.06em;
+          font-size:1.2rem;
+          margin-bottom:1rem;
+          color:var(--text3)
+        ">
+          SYSTEM DESIGN
+        </h3>
+
+        <div class="patch">
+          <div class="pver">Lane Switch Flow</div>
+          <div class="pdesc">
+            Input → Target Lane Check → Interp Move Component → Collision Re-check → Lane Confirmed
+          </div>
+        </div>
+
+        <div class="patch">
+          <div class="pver">Obstacle Spawner Flow</div>
+          <div class="pdesc">
+            Distance Trigger → Pattern Pool → Lane Assignment → Spawn Actor → Difficulty Scale → Despawn Behind Player
+          </div>
+        </div>
+
+        <div class="patch">
+          <div class="pver">Lifeline Flow</div>
+          <div class="pdesc">
+            Collision Detected → Lifeline Available Check → Consume Lifeline → Brief Invulnerability → Resume Run
+          </div>
+        </div>
+
+        <div class="patch">
+          <div class="pver">Hint System Flow</div>
+          <div class="pdesc">
+            Upcoming Pattern Read → Hint Widget Trigger → Display Timing Window → Fade Out → Clear on Pass
+          </div>
+        </div>
+
+        <div class="patch">
+          <div class="pver">Core Architecture</div>
+          <div class="pdesc">
+            Player Runner Character → Lane/Jump/Duck Components → Obstacle Spawner → Theme Manager → Mode Manager → UI/HUD
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- CHALLENGES -->
+
+<section id="Challenges" class="sec alt">
+
+  <div class="w">
+
+    <span class="slabel">// problem solving</span>
+    <h2 class="stitle">Challenges & Solutions</h2>
+
+    <div class="two">
+
+      <div>
+
+        <div class="patch">
+          <b>Lane Switch Feel</b><br>
+          Problem: Instant lane snaps felt jarring at high speed<br>
+          Solution: Interpolated lane movement with input buffering<br>
+          Result: Smooth, responsive lane changes at any speed
+        </div>
+
+        <div class="patch">
+          <b>Obstacle Pattern Fairness</b><br>
+          Problem: Random spawns occasionally created unavoidable combinations<br>
+          Solution: Curated pattern pool validated for at least one safe path<br>
+          Result: Every spawn is challenging but always survivable
+        </div>
+
+      </div>
+
+      <div>
+
+        <div class="patch">
+          <b>Lifeline / Hint Sync</b><br>
+          Problem: Hint timing didn't always match player reaction window<br>
+          Solution: Hint trigger distance tuned per obstacle speed tier<br>
+          Result: Hints consistently arrive with enough reaction time
+        </div>
+
+        <div class="patch">
+          <b>Theme Swapping Performance</b><br>
+          Problem: Swapping themes caused hitches from asset loading<br>
+          Solution: Async asset streaming and pre-warmed theme pools<br>
+          Result: Seamless theme changes with no frame drops
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- TRAILER -->
+<section class="sec">
+  <div class="w" style="text-align:center">
+
+    <span class="slabel">// gameplay</span>
+    <h2 class="stitle">Trailer</h2>
+
+    <div style="
+      margin-top:2rem;
+      border-radius:16px;
+      overflow:hidden;
+      aspect-ratio:16/9;
+      max-width:900px;
+      margin-left:auto;
+      margin-right:auto;
+    ">
+     <iframe src="https://www.youtube.com/embed/d6NTscUaNbY?si=NKMP1WxIu2-Ou0n8" style="width:100%;height:100%;border:none" allowfullscreen title="Bomber Clash Trailer"></iframe>
+    
+    </div>
+
+  </div>
+</section>
+
+
+<!-- CTA -->
+
+<section class="sec alt">
+  <div class="w reveal">
+
+    <div class="ctacard">
+
+      <h3>Interested in My Work?</h3>
+
+      <p>
+        Explore more Unreal Engine projects or contact me for collaborations,
+        internships, and game development opportunities.
+      </p>
+
+      <div style="
+        display:flex;
+        justify-content:center;
+        flex-wrap:wrap;
+        gap:1rem;
+        margin-top:2rem;
+      ">
+
+        <a class="btn-a" href="index.html#contact">
+          <i class="fa-solid fa-envelope"></i>
+          Contact Me
+        </a>
+
+        <a class="btn-g" href="index.html#projects">
+          <i class="fa-solid fa-gamepad"></i>
+          View More Projects
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+<footer>
+  <p>
+    © <span id="yr"></span>
+    <span>Shree Modak</span>
+    · Unreal Engine Developer
+  </p>
+</footer>
+
+
+<script>
+
+document.getElementById('yr').textContent =
+new Date().getFullYear();
+
+window.addEventListener('scroll',()=>{
+
+  const h=document.documentElement;
+
+  document.getElementById('pbar').style.width=
+  (h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+
+  document.getElementById('mnav')
+  .classList.toggle('sc',window.scrollY>50);
+
+});
+
+const io = new IntersectionObserver(e =>
+  e.forEach(x => {
+    if(x.isIntersecting){
+      x.target.classList.add('visible');
+      io.unobserve(x.target);
+    }
+  }),
+{threshold:0.1});
+
+document.querySelectorAll('.reveal')
+.forEach(el=>io.observe(el));
+
+/* floating icons */
+
+const c=document.getElementById('ghosts');
+
+const em=['⚡','🏃','💨'];
+
+for(let i=0;i<14;i++){
+
+  const g=document.createElement('div');
+
+  g.className='ghost';
+
+  g.textContent=em[i%3];
+
+  g.style.cssText=`
+    left:${Math.random()*100}%;
+    font-size:${Math.random()*18+12}px;
+    animation-duration:${Math.random()*10+12}s;
+    animation-delay:${Math.random()*14}s;
+  `;
+
+  c.appendChild(g);
+}
+
+/* ===== CUSTOM INFINITE GALLERY (no autoplay) ===== */
+const gTrack=document.getElementById('gTrack');
+const realSlides=Array.from(gTrack.children);
+const slideCount=realSlides.length;
+const galleryImgs=realSlides.map(s=>{const img=s.querySelector('img');return{src:img.getAttribute('src'),alt:img.getAttribute('alt')||''};});
+
+// clone last -> front, first -> back, for seamless infinite loop in both directions
+const firstClone=realSlides[0].cloneNode(true);
+const lastClone=realSlides[slideCount-1].cloneNode(true);
+firstClone.setAttribute('aria-hidden','true');
+lastClone.setAttribute('aria-hidden','true');
+gTrack.appendChild(firstClone);
+gTrack.insertBefore(lastClone,realSlides[0]);
+
+let curIndex=1; // 1..slideCount map to real slides (0 = clone of last, slideCount+1 = clone of first)
+let slideWidthPct=100;
+
+function getPerView(){
+  const w=window.innerWidth;
+  if(w>=1024)return 3;
+  if(w>=640)return 2;
+  return 1;
+}
+function layout(){
+  slideWidthPct=100/getPerView();
+  Array.from(gTrack.children).forEach(s=>s.style.flexBasis=slideWidthPct+'%');
+  gTrack.style.transition='none';
+  gTrack.style.transform=`translateX(-${curIndex*slideWidthPct}%)`;
+  requestAnimationFrame(()=>{gTrack.style.transition='';});
+}
+function goTo(index,animate=true){
+  curIndex=index;
+  gTrack.style.transition=animate?'transform .5s cubic-bezier(.4,0,.2,1)':'none';
+  gTrack.style.transform=`translateX(-${curIndex*slideWidthPct}%)`;
+  updateDots();
+}
+function next(){goTo(curIndex+1);}
+function prev(){goTo(curIndex-1);}
+
+// seamless jump when landing on a clone
+gTrack.addEventListener('transitionend',()=>{
+  if(curIndex===0){goTo(slideCount,false);}
+  else if(curIndex===slideCount+1){goTo(1,false);}
+});
+
+// dots (map real slide 0..slideCount-1)
+const gDots=document.getElementById('gDots');
+galleryImgs.forEach((_,i)=>{
+  const d=document.createElement('button');
+  d.className='gdot'+(i===0?' active':'');
+  d.setAttribute('aria-label','Go to screenshot '+(i+1));
+  d.addEventListener('click',()=>goTo(i+1));
+  gDots.appendChild(d);
+});
+function updateDots(){
+  let realIdx=((curIndex-1)+slideCount)%slideCount;
+  Array.from(gDots.children).forEach((d,i)=>d.classList.toggle('active',i===realIdx));
+}
+
+document.getElementById('gNext').addEventListener('click',next);
+document.getElementById('gPrev').addEventListener('click',prev);
+
+// drag / swipe support
+let isDown=false,startX=0,startTranslate=0,viewportW=1,dragMoved=false;
+const viewport=document.querySelector('.gtrack-viewport');
+function pointerX(e){return e.touches?e.touches[0].clientX:e.clientX;}
+function dragStart(e){
+  isDown=true;
+  dragMoved=false;
+  startX=pointerX(e);
+  viewportW=viewport.getBoundingClientRect().width;
+  startTranslate=-curIndex*slideWidthPct;
+  gTrack.classList.add('dragging');
+}
+function dragMove(e){
+  if(!isDown)return;
+  const dx=pointerX(e)-startX;
+  if(Math.abs(dx)>6)dragMoved=true;
+  const dPct=(dx/viewportW)*100;
+  gTrack.style.transform=`translateX(${startTranslate+dPct}%)`;
+}
+function dragEnd(e){
+  if(!isDown)return;
+  isDown=false;
+  gTrack.classList.remove('dragging');
+  const dx=(e.changedTouches?e.changedTouches[0].clientX:e.clientX)-startX;
+  if(Math.abs(dx)>50){dx>0?prev():next();}
+  else{goTo(curIndex);}
+}
+viewport.addEventListener('mousedown',dragStart);
+window.addEventListener('mousemove',dragMove);
+window.addEventListener('mouseup',dragEnd);
+viewport.addEventListener('touchstart',dragStart,{passive:true});
+viewport.addEventListener('touchmove',dragMove,{passive:true});
+viewport.addEventListener('touchend',dragEnd);
+
+window.addEventListener('resize',layout);
+layout();
+updateDots();
+
+// LIGHTBOX
+const lb=document.getElementById('lightbox');
+const lbImg=document.getElementById('lbImg');
+const lbCount=document.getElementById('lbCount');
+let lbIndex=0;
+
+function openLightbox(i){
+  lbIndex=(i+galleryImgs.length)%galleryImgs.length;
+  showLbImage();
+  lb.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function showLbImage(){
+  lbImg.classList.remove('show');
+  const item=galleryImgs[lbIndex];
+  const preload=new Image();
+  preload.onload=()=>{
+    lbImg.src=item.src;
+    lbImg.alt=item.alt;
+    requestAnimationFrame(()=>lbImg.classList.add('show'));
+  };
+  preload.src=item.src;
+  lbCount.textContent=`${lbIndex+1} / ${galleryImgs.length}`;
+}
+function closeLightbox(){
+  lb.classList.remove('open');
+  document.body.style.overflow='';
+}
+function lbNextImg(){openLbAt(lbIndex+1)}
+function lbPrevImg(){openLbAt(lbIndex-1)}
+function openLbAt(i){lbIndex=(i+galleryImgs.length)%galleryImgs.length;showLbImage();}
+
+// event delegation so it always works, even on cloned slides
+gTrack.addEventListener('click',e=>{
+  if(dragMoved){dragMoved=false;return;}
+  const img=e.target.closest('img');
+  if(!img)return;
+  const src=img.getAttribute('src');
+  const idx=galleryImgs.findIndex(g=>g.src===src);
+  openLightbox(idx>=0?idx:0);
+});
+
+document.getElementById('lbClose').addEventListener('click',closeLightbox);
+document.getElementById('lbNext').addEventListener('click',lbNextImg);
+document.getElementById('lbPrev').addEventListener('click',lbPrevImg);
+lb.addEventListener('click',e=>{if(e.target===lb)closeLightbox();});
+document.addEventListener('keydown',e=>{
+  if(!lb.classList.contains('open'))return;
+  if(e.key==='Escape')closeLightbox();
+  if(e.key==='ArrowRight')lbNextImg();
+  if(e.key==='ArrowLeft')lbPrevImg();
+});
+let lbTouchStartX=0;
+lb.addEventListener('touchstart',e=>{lbTouchStartX=e.changedTouches[0].screenX;},{passive:true});
+lb.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].screenX-lbTouchStartX;
+  if(Math.abs(dx)>40){dx>0?lbPrevImg():lbNextImg();}
+},{passive:true});
+
+</script>
+
+</body>
+</html>
